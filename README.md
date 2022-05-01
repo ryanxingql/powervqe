@@ -1,4 +1,4 @@
-# PowerVQE: An Open Framework for Quality Enhancement of Compressed Video
+# PowerVQE: An Open Framework for Quality Enhancement of Compressed Videos
 
 We implement some widely-used quality enhancement approaches for compressed videos based on the powerful [MMEditing](https://github.com/open-mmlab/mmediting) project. These approaches are commonly used as compared approaches in this field.
 

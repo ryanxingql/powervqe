@@ -1,4 +1,4 @@
-# BasicVQE: An Basic Framework for Video Quality Enhancement
+# PowerVQE: An Open Framework for Quality Enhancement of Compressed Video
 
 We implement some widely-used quality enhancement approaches for compressed videos based on the powerful [MMEditing](https://github.com/open-mmlab/mmediting) project. These approaches are commonly used as compared approaches in this field.
 
@@ -8,3 +8,5 @@ We implement some widely-used quality enhancement approaches for compressed vide
 - [DnCNN (TIP 2017)](https://arxiv.org/abs/1608.03981): Widely used for decompression and denoising.
 
 Codes will be released in a few weeks.
+
+For enhancing compressed images, you may refer to [PowerQE](https://github.com/ryanxingql/powerqe).

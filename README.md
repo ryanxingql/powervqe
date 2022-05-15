@@ -85,7 +85,7 @@ Note: We are still training and improving the performance of STDF. The latest mo
 
 ## 3. Environment
 
-Ubuntu; Two V100 GPUs with 16 GB memory.
+Ubuntu; Four V100 GPUs with 16 GB memory.
 
 ```bash
 git clone https://github.com/ryanxingql/powervqe.git
@@ -347,13 +347,13 @@ DCAD:
 
 1. Change the training patch size from 38 to 128.
 2. Change the lr from 1 to 1e-4.
-3. Use Adam instead of AdaDelta.
+3. Change AdaDelta to Adam.
 
 DnCNN:
 
 1. Change the training patch size from 40 to 128.
 2. Change the lr from 0.1 to 1e-4.
-3. Change the SGD to Adam.
+3. Change SGD to Adam.
 4. Different to [PowerQE](https://github.com/ryanxingql/powerqe), we turn on batch normalization for DnCNN. It benefits the convergence of DnCNN.
 
 EDVR:

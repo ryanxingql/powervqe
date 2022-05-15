@@ -227,7 +227,7 @@ class BasicVSR(BasicRestorer):
                             f'{i:08d}-{iteration + 1:06d}.png')
                     elif iteration is None:
                         save_path_i = osp.join(save_path, folder_name,
-                                               f'{i:08d}.png')
+                                               f'f{i+1:03d}.png')  # fixme
                     else:
                         raise ValueError('iteration should be number or None, '
                                          f'but got {type(iteration)}')

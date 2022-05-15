@@ -105,7 +105,7 @@ data = dict(
     test=dict(
         type=test_dataset_type,
         lq_folder='data/ldv_v2/test_lq/001',  # 002, 003, ... 015; recommend demo pipeline, see README
-        gt_folder='data/ldv_v2/test_gt/001',
+        gt_folder='data/ldv_v2/test_gt/001',  # 002, 003, ... 015; recommend demo pipeline, see README
         pipeline=test_pipeline,
         scale=1
     )

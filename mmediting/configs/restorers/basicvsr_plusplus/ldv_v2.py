@@ -124,8 +124,8 @@ data = dict(
     # test
     test=dict(
         type=test_dataset_type,
-        lq_folder='data/ldv_v2/test_lq',  # 'data/ldv_v2/test_lq' or 'data/mfqe_v2/test_lq'
-        gt_folder='data/ldv_v2/test_gt',  # 'data/ldv_v2/test_gt' or 'data/mfqe_v2/test_gt'
+        lq_folder='data/ldv_v2/test_lq',  # 'data/ldv_v2/test_lq'; to test the mfqev2 dataset, please use my codes in toolbox_test; see README
+        gt_folder='data/ldv_v2/test_gt',  # 'data/ldv_v2/test_gt'; to test the mfqev2 dataset, please use my codes in toolbox_test; see README
         pipeline=test_pipeline,
         scale=1,
         test_mode=True),

@@ -6,18 +6,18 @@ import random
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-src_dir', default='../mmediting/data/ldv')
+parser.add_argument('-src-dir', default='../mmediting/data/ldv_v2')
 parser.add_argument('-label', default='train')
 parser.add_argument('-nfrms', default=10, type=int)
 args = parser.parse_args()
 
-assert osp.exists(src_dir)
+assert osp.exists(args.src_dir)
 
-src_dir_gt = osp.join(src_dir, f'{args.label}_gt')
-src_dir_lq = osp.join(src_dir, f'{args.label}_lq')
+src_dir_gt = osp.join(args.src_dir, f'{args.label}_gt')
+src_dir_lq = osp.join(args.src_dir, f'{args.label}_lq')
 
-tar_dir_gt = osp.join(src_dir, f'{args.label}_gt_{args.nfrms}_frms_max_per_vid')
-tar_dir_lq = osp.join(src_dir, f'{args.label}_lq_{args.nfrms}_frms_max_per_vid')
+tar_dir_gt = osp.join(args.src_dir, f'{args.label}_gt_{args.nfrms}_frms_max_per_vid')
+tar_dir_lq = osp.join(args.src_dir, f'{args.label}_lq_{args.nfrms}_frms_max_per_vid')
 os.mkdir(tar_dir_gt)
 os.mkdir(tar_dir_lq)
 

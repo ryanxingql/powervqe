@@ -10,11 +10,11 @@ from glob import glob
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-gpu', type=int, default=0)
-parser.add_argument('-inp-dir', type=str, default='../data/ldv/test_lq')
-parser.add_argument('-out-dir', type=str, default='../work_dirs/basicvsrpp_ldv_v2/latest')
+parser.add_argument('-inp-dir', type=str, default='../data/ldv_v2/test_lq')
+parser.add_argument('-out-dir', type=str, default='../work_dirs/dcad_ldv_v2/500k/ldv_v2/')
 
-parser.add_argument('-config-path', type=str, default='../configs/restorers/basicvsr_plusplus/ldv_v2.py')
-parser.add_argument('-model-path', type=str, default='../work_dirs/basicvsrpp_ldv_v2/latest.pth')
+parser.add_argument('-config-path', type=str, default='../configs/restorers/dcad/ldv_v2.py')
+parser.add_argument('-model-path', type=str, default='../work_dirs/dcad_ldv_v2/iter_500000.pth')
 
 parser.add_argument('-if-rmd', action='store_true')
 

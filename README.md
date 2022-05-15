@@ -10,9 +10,12 @@
   - [4. Datasets](#4-datasets)
     - [4.1 LDVv2 Dataset](#41-ldvv2-dataset)
     - [4.2 MFQEv2 Dataset](#42-mfqev2-dataset)
-    - [4.3 Create Symbolic Link](#43-create-symbolic-link)
+    - [4.3 Create a Symbolic Link](#43-create-a-symbolic-link)
   - [5. Training](#5-training)
+    - [5.1 Special Cases](#51-special-cases)
   - [6. Test](#6-test)
+    - [6.1 Special Cases](#61-special-cases)
+    - [6.2 PSNR Calculation](#62-psnr-calculation)
   - [7. Q&A](#7-qa)
     - [7.1 Main Differences to the Original Papers](#71-main-differences-to-the-original-papers)
     - [7.2 How to Use the Latest MMEditing](#72-how-to-use-the-latest-mmediting)
@@ -33,6 +36,8 @@ We also implement some SR baseline models for quality enhancement as follows:
 - [EDVR](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/edvr/README.md): Winner of the NTIRE 2019 VSR challenge.
 
 For enhancing the quality of compressed images, you may refer to [PowerQE](https://github.com/ryanxingql/powerqe).
+
+:e-mail: Feel free to contact: `ryanxingql@gmail.com`.
 
 ## 2. Performance
 
@@ -88,7 +93,7 @@ Note: We are still training and improving the performance of STDF. The latest mo
 Ubuntu; Four V100 GPUs with 16 GB memory.
 
 ```bash
-git clone https://github.com/ryanxingql/powervqe.git
+git clone https://github.com/ryanxingql/powervqe.git --depth=1
 cd powervqe/
 
 conda create -n open-mmlab python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -c pytorch -y && conda activate open-mmlab
@@ -101,7 +106,7 @@ cd mmediting/
 pip3 install -e .
 
 pip3 install scipy tqdm
-#pip3 install setuptools==59.5.0
+pip3 install setuptools==59.5.0
 ```
 
 Layout:
@@ -152,8 +157,8 @@ If you want to train DCAD or DnCNN, you should select some frames from each vide
 
 ```bash
 cd toolbox_data/
-python generate_data_dir_for_dcad.py -label train -src_dir <your-data-dir>
-python generate_data_dir_for_dcad.py -label valid -src_dir <your-data-dir>
+python generate_data_dir_for_dcad.py -label train -src-dir <your-data-dir>/ldv_v2/
+python generate_data_dir_for_dcad.py -label valid -src-dir <your-data-dir>/ldv_v2/
 ```
 
 ### 4.2 MFQEv2 Dataset
@@ -182,12 +187,19 @@ chmod +x ./run.sh
 
 Note: The MFQEv2 dataset originally has 18 test videos. Among them, two videos with 2K resolution, i.e., *PeopleOnStreet* and *Traffic*, are abandoned, since most approaches cannot test them with a GPU with 16 GB memory.
 
-### 4.3 Create Symbolic Link
+### 4.3 Create a Symbolic Link
 
 ```bash
 cd mmediting/
+
+# suppose your data dir is /mnt/usr/data
+# then you should run:
+#ln -s /mnt/usr/data ./
+
 ln -s <your-data-dir> ./
 ```
+
+Note that the `<your-data-dir>` should be an absolute path.
 
 Layout:
 
@@ -224,6 +236,8 @@ Change the `data['train_dataloader']['samples_per_gpu']` in the config file acco
 ```bash
 cd mmediting/
 
+chmod +x ./tools/dist_train.sh
+
 # suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2.py
 # and the gpu number is 4
 # then you should run:
@@ -236,6 +250,8 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_train.sh <config-path> <gpu-number>
 ```
+
+### 5.1 Special Cases
 
 To train the MFQEv2 models, you should first train the non-PQF model then the PQF model:
 
@@ -266,32 +282,49 @@ Change the `data['test']['lq_folder']` and `data['test']['gt_folder']` in the co
 ```bash
 cd mmediting/
 
+chmod +x ./tools/dist_test.sh
+
 # suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2.py
-# your pre-trained model is located at ./work_dirs/basicvsrpp_ldv_v2/iter_300000.pth
-# you want to use 2 gpus
-# and you want to save images at ./work_dirs/basicvsrpp_ldv_v2/300k/ldv
+# your pre-trained model is located at ./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth
+# you want to use 4 gpus
+# and you want to save images at ./work_dirs/basicvsrpp_ldv_v2/500k/ldv
 # then you should run:
 #conda activate open-mmlab && \
-#CUDA_VISIBLE_DEVICES=0,1 \
+#CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
 #./tools/dist_test.sh \
 #./configs/restorers/basicvsr_plusplus/ldv_v2.py \
-#./work_dirs/basicvsrpp_ldv_v2/iter_300000.pth \
-#2 \
-#--save-path ./work_dirs/basicvsrpp_ldv_v2/300k/ldv_v2
+#./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth \
+#4 \
+#--save-path ./work_dirs/basicvsrpp_ldv_v2/500k/ldv_v2
 conda activate open-mmlab && \
-CUDA_VISIBLE_DEVICES=0,1 \
+CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29510 \
-./tools/dist_test.sh <config-path> <model-path> <gpu-number> <img-save-path>
+./tools/dist_test.sh <config-path> <model-path> <gpu-number> \
+--save-path <img-save-path>
 ```
 
-To test each video subfolder for DCAD or DnCNN, demo pipeline is more recommended than the test pipeline above:
+### 6.1 Special Cases
+
+To test the MFQEv2 dataset for BasicVSR++, the following commands are necessary, since the original BasicVSR++ cannot process frames with size smaller than 4*64:
 
 ```bash
-cd toolbox_test/
+cd mmediting/toolbox_test/
 
-# LDVv2 dataset
+conda activate open-mmlab && \
+python test.py -gpu 0 \
+-inp-dir '../data/mfqe_v2/test_lq' \
+-out-dir '../work_dirs/basicvsrpp_ldv_v2/300k/mfqe_v2/' \
+-config-path '../configs/restorers/basicvsr_plusplus/ldv_v2.py' \
+-model-path '../work_dirs/basicvsrpp_ldv_v2/iter_300000.pth'
+```
 
+To test each video subfolder for DCAD or DnCNN, demo pipeline is more recommended than the test pipeline:
+
+```bash
+cd mmediting/toolbox_test/
+
+# test LDVv2 dataset
 conda activate open-mmlab && \
 python test.py -gpu 0 \
 -inp-dir '../data/ldv_v2/test_lq' \
@@ -300,8 +333,7 @@ python test.py -gpu 0 \
 -model-path '../work_dirs/dcad_ldv_v2/iter_500000.pth' \
 -if-img
 
-# MFQEv2 dataset
-
+# test MFQEv2 dataset
 conda activate open-mmlab && \
 python test.py -gpu 0 \
 -inp-dir '../data/mfqe_v2/test_lq' \
@@ -311,7 +343,31 @@ python test.py -gpu 0 \
 -if-img
 ```
 
-To test the MFQEv2 models, you should test the non-PQF and PQF models separately.
+To test the MFQEv2 models, you should test the non-PQF and PQF models separately and save the enhanced frames to the same dir.
+
+```bash
+# test non-PQFs
+conda activate open-mmlab && \
+CUDA_VISIBLE_DEVICES=0,1,2,3 \
+PORT=29500 \
+./tools/dist_test.sh \
+./configs/restorers/mfqev2/ldv_v2_non_pqf.py \
+./work_dirs/mfqev2_ldv_v2_non_pqf/iter_600000.pth \
+4 \
+--save-path ./work_dirs/mfqev2_ldv_v2/ldv_v2
+
+# test PQFs
+conda activate open-mmlab && \
+CUDA_VISIBLE_DEVICES=0,1,2,3 \
+PORT=29500 \
+./tools/dist_test.sh \
+./configs/restorers/mfqev2/ldv_v2_pqf.py \
+./work_dirs/mfqev2_ldv_v2_pqf/iter_600000.pth \
+4 \
+--save-path ./work_dirs/mfqev2_ldv_v2/ldv_v2
+```
+
+### 6.2 PSNR Calculation
 
 Finally, we can get the PSNR results. Take DCAD as an example:
 
@@ -325,7 +381,7 @@ python cal_rgb_psnr.py \
 -gt-dir '../mmediting/data/ldv_v2/test_gt' \
 -enh-dir '../mmediting/work_dirs/dcad_ldv_v2/500k/ldv_v2/' \
 -ignored-frms '{"002":[0]}' \
--save-dir 'log/dcad_ldv_v2/500k/ldv_v2/'
+-save-dir './log/dcad_ldv_v2/500k/ldv_v2/'
 
 # Y-PSNR for MFQEv2
 
@@ -333,7 +389,7 @@ conda activate open-mmlab && \
 python cal_y_psnr.py \
 -gt-dir '../mmediting/data/mfqe_v2/test_gt' \
 -enh-dir '../mmediting/work_dirs/dcad_ldv_v2/500k/mfqe_v2/' \
--save-dir 'log/dcad_ldv_v2/500k/mfqe_v2/' \
+-save-dir './log/dcad_ldv_v2/500k/mfqe_v2/' \
 -order
 ```
 
@@ -370,17 +426,15 @@ MFQEv2:
 
 Here are some important files to run our codes. You can simply copy these files to the latest MMEditing repo.
 
-- All config files.
-- `mmediting/mmedit/models/backbones/sr_backbones/basicvsr_pp_no_mirror.py`
-- `mmediting/mmedit/models/backbones/sr_backbones/dcad.py`
-- `mmediting/mmedit/models/backbones/sr_backbones/dncnn.py`
-- `mmediting/mmedit/models/backbones/sr_backbones/edvr_net.py`
+- `mmediting/configs/restorers/{basicvsr_plusplus,dcad,dncnn,edvr,stdf}/ldv_v2.py`
+- `mmediting/configs/restorers/mfqev2/ldv_v2_{non_pqf,pqf}.py`
+- `mmediting/mmedit/models/backbones/sr_backbones/{basicvsr_pp_no_mirror,dcad,dncnn,edvr_net,mfqev2,stdf}.py`
+- `mmediting/mmedit/models/restorers/{basicvsr,mfqev2_restorer,stdf}.py`
 - `mmediting/mmedit/datasets/pipelines/augmentation.py`
-- `mmediting/mmedit/datasets/sr_ldv_dataset.py`
-- `mmediting/mmedit/models/backbones/sr_backbones/mfqev2.py`
-- `mmediting/mmedit/datasets/ldp_dataset.py`
-- `mmediting/mmedit/models/backbones/sr_backbones/stdf.py`
+- `mmediting/mmedit/datasets/{sr_ldv_dataset,ldp_dataset}.py`
 - `mmediting/demo/restoration_video_demo.py`
+- `mmediting/mmedit/apis/restoration_video_inference.py`
+- `mmediting/toolbox_test`
 
 ### 7.3 Licenses
 

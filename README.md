@@ -206,25 +206,25 @@ Layout:
 ```text
 powervqe/
 └── mmediting/
-  └── data/
-      ├── ldv_v2/
-      │   ├── train_gt/
-      │   │   ├── 001/
-      │   │   │   ├── f001.png
-      │   │   │   └── ...
-      │   │   └── ...
-      │   ├── train_lq/
-      │   ├── valid_gt/
-      │   ├── valid_lq/
-      │   ├── test_gt/
-      │   └── test_lq/
-      └── mfqe_v2
-          ├── test_gt/
-          │   ├── BasketballDrill_832x480_500/
-          │   │   ├── f001.png
-          │   │   └── ...
-          │   └── ...
-          └── test_lq/
+    └── data/
+        ├── ldv_v2/
+        │   ├── train_gt/
+        │   │   ├── 001/
+        │   │   │   ├── f001.png
+        │   │   │   └── ...
+        │   │   └── ...
+        │   ├── train_lq/
+        │   ├── valid_gt/
+        │   ├── valid_lq/
+        │   ├── test_gt/
+        │   └── test_lq/
+        └── mfqe_v2
+            ├── test_gt/
+            │   ├── BasketballDrill_832x480_500/
+            │   │   ├── f001.png
+            │   │   └── ...
+            │   └── ...
+            └── test_lq/
 ```
 
 ## 5. Training

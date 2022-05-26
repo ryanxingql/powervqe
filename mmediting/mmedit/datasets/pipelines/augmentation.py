@@ -919,7 +919,12 @@ class GenerateFrameIndiceswithPaddingEDVR:
     @ryanxingql
     """
 
-    def __init__(self, padding, filename_tmpl='f{:03d}', idx_start_from=1,):
+    def __init__(
+        self,
+        padding,
+        filename_tmpl='f{:03d}',
+        idx_start_from=1,
+    ):
         if padding not in ('replicate', 'reflection', 'reflection_circle',
                            'circle'):
             raise ValueError(f'Wrong padding mode {padding}.'
@@ -943,7 +948,8 @@ class GenerateFrameIndiceswithPaddingEDVR:
         """
         num_input_frames = results['num_input_frames']
 
-        clip_name, frame_name = results['key'].split(os.sep)  # key example: 001/f001
+        clip_name, frame_name = results['key'].split(
+            os.sep)  # key example: 001/f001
         current_idx = int(frame_name[1:]) - self.idx_start_from
 
         last_idx = results['max_frame_num'] - 1  # start from 0
@@ -977,8 +983,9 @@ class GenerateFrameIndiceswithPaddingEDVR:
         lq_path_root = results['lq_path']
         gt_path_root = results['gt_path']
         lq_paths = [
-            osp.join(lq_path_root, clip_name,
-                     f'{self.filename_tmpl.format(idx + self.idx_start_from)}.png')
+            osp.join(
+                lq_path_root, clip_name,
+                f'{self.filename_tmpl.format(idx + self.idx_start_from)}.png')
             for idx in frame_list
         ]
         gt_paths = [osp.join(gt_path_root, clip_name, f'{frame_name}.png')]
@@ -999,7 +1006,10 @@ class GenerateFrameIndicesMFQE:
     @ryanxingql
     """
 
-    def __init__(self, filename_tmpl='f{:03d}',):
+    def __init__(
+        self,
+        filename_tmpl='f{:03d}',
+    ):
         self.filename_tmpl = filename_tmpl
         assert filename_tmpl == 'f{:03d}'
 
@@ -1013,14 +1023,19 @@ class GenerateFrameIndicesMFQE:
         Returns:
             dict: A dict containing the processed data and information.
         """
-        clip_name, frame_name = results['key'].split(os.sep)  # key example: 001/f001
+        clip_name, frame_name = results['key'].split(
+            os.sep)  # key example: 001/f001
 
         lq_path_root = results['lq_path']
         gt_path_root = results['gt_path']
         lq_path = [
-            osp.join(lq_path_root, clip_name, f'{self.filename_tmpl.format(results["left_pqf_idx"])}.png'),
+            osp.join(
+                lq_path_root, clip_name,
+                f'{self.filename_tmpl.format(results["left_pqf_idx"])}.png'),
             osp.join(lq_path_root, clip_name, f'{frame_name}.png'),
-            osp.join(lq_path_root, clip_name, f'{self.filename_tmpl.format(results["right_pqf_idx"])}.png'),
+            osp.join(
+                lq_path_root, clip_name,
+                f'{self.filename_tmpl.format(results["right_pqf_idx"])}.png'),
         ]
         gt_path = [osp.join(gt_path_root, clip_name, f'{frame_name}.png')]
         results['lq_path'] = lq_path
@@ -1049,7 +1064,10 @@ class GenerateFrameIndicesEDVR:
     @ryanxingql
     """
 
-    def __init__(self, interval_list, filename_tmpl='f{:03d}', idx_start_from=1):
+    def __init__(self,
+                 interval_list,
+                 filename_tmpl='f{:03d}',
+                 idx_start_from=1):
         self.interval_list = interval_list
         self.filename_tmpl = filename_tmpl
         self.idx_start_from = idx_start_from
@@ -1068,7 +1086,8 @@ class GenerateFrameIndicesEDVR:
         """
         num_half_frames = results['num_input_frames'] // 2
 
-        clip_name, frame_name = results['key'].split(os.sep)  # key example: 001/f001
+        clip_name, frame_name = results['key'].split(
+            os.sep)  # key example: 001/f001
         center_frame_idx = int(frame_name[1:]) - self.idx_start_from
 
         last_idx = results['max_frame_num'] - 1
@@ -1083,13 +1102,17 @@ class GenerateFrameIndicesEDVR:
             end_frame_idx = center_frame_idx + num_half_frames * interval
         frame_name = f'{self.filename_tmpl.format(center_frame_idx + self.idx_start_from)}'
         neighbor_list = list(
-            range(center_frame_idx - num_half_frames * interval + self.idx_start_from,
-                  center_frame_idx + num_half_frames * interval + 1 + self.idx_start_from, interval))
+            range(
+                center_frame_idx - num_half_frames * interval +
+                self.idx_start_from, center_frame_idx +
+                num_half_frames * interval + 1 + self.idx_start_from,
+                interval))
 
         lq_path_root = results['lq_path']
         gt_path_root = results['gt_path']
         lq_path = [
-            osp.join(lq_path_root, clip_name, f'{self.filename_tmpl.format(v)}.png')
+            osp.join(lq_path_root, clip_name,
+                     f'{self.filename_tmpl.format(v)}.png')
             for v in neighbor_list
         ]
         gt_path = [osp.join(gt_path_root, clip_name, f'{frame_name}.png')]

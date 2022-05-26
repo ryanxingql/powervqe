@@ -8,7 +8,14 @@ from mmedit.utils import get_root_logger
 
 
 class STDF(nn.Module):
-    def __init__(self, in_nc=3, out_nc=64, nf=32, nb=3, base_ks=3, deform_ks=3):
+
+    def __init__(self,
+                 in_nc=3,
+                 out_nc=64,
+                 nf=32,
+                 nb=3,
+                 base_ks=3,
+                 deform_ks=3):
         """
         Args:
             in_nc: num of input channels.
@@ -25,42 +32,37 @@ class STDF(nn.Module):
         self.nb = nb
         self.deform_ks = deform_ks
 
-        self.size_dk = deform_ks ** 2
+        self.size_dk = deform_ks**2
 
         # u-shape backbone
         self.in_conv = nn.Sequential(
-            nn.Conv2d(in_nc, nf, base_ks, padding=base_ks//2),
-            nn.ReLU(inplace=True)
-        )
+            nn.Conv2d(in_nc, nf, base_ks, padding=base_ks // 2),
+            nn.ReLU(inplace=True))
         for i in range(1, nb):
             setattr(
-                self, 'dn_conv{}'.format(i), nn.Sequential(
-                    nn.Conv2d(nf, nf, base_ks, stride=2, padding=base_ks//2),
+                self, 'dn_conv{}'.format(i),
+                nn.Sequential(
+                    nn.Conv2d(nf, nf, base_ks, stride=2, padding=base_ks // 2),
                     nn.ReLU(inplace=True),
-                    nn.Conv2d(nf, nf, base_ks, padding=base_ks//2),
-                    nn.ReLU(inplace=True)
-                )
-            )
+                    nn.Conv2d(nf, nf, base_ks, padding=base_ks // 2),
+                    nn.ReLU(inplace=True)))
             setattr(
-                self, 'up_conv{}'.format(i), nn.Sequential(
-                    nn.Conv2d(2*nf, nf, base_ks, padding=base_ks//2),
+                self, 'up_conv{}'.format(i),
+                nn.Sequential(
+                    nn.Conv2d(2 * nf, nf, base_ks, padding=base_ks // 2),
                     nn.ReLU(inplace=True),
                     nn.ConvTranspose2d(nf, nf, 4, stride=2, padding=1),
-                    nn.ReLU(inplace=True)
-                )
-            )
+                    nn.ReLU(inplace=True)))
         self.tr_conv = nn.Sequential(
-            nn.Conv2d(nf, nf, base_ks, stride=2, padding=base_ks//2),
+            nn.Conv2d(nf, nf, base_ks, stride=2, padding=base_ks // 2),
             nn.ReLU(inplace=True),
-            nn.Conv2d(nf, nf, base_ks, padding=base_ks//2),
+            nn.Conv2d(nf, nf, base_ks, padding=base_ks // 2),
             nn.ReLU(inplace=True),
             nn.ConvTranspose2d(nf, nf, 4, stride=2, padding=1),
-            nn.ReLU(inplace=True)
-        )
+            nn.ReLU(inplace=True))
         self.out_conv = nn.Sequential(
-            nn.Conv2d(nf, nf, base_ks, padding=base_ks//2),
-            nn.ReLU(inplace=True)
-        )
+            nn.Conv2d(nf, nf, base_ks, padding=base_ks // 2),
+            nn.ReLU(inplace=True))
 
         # regression head
         # why in_nc*3*size_dk?
@@ -68,14 +70,16 @@ class STDF(nn.Module):
         #   2*size_dk: 2 coordinates for each point
         #   1*size_dk: 1 confidence (attention) score for each point
         self.offset_mask = nn.Conv2d(
-            nf, in_nc*3*self.size_dk, base_ks, padding=base_ks//2
-        )
+            nf, in_nc * 3 * self.size_dk, base_ks, padding=base_ks // 2)
 
         # deformable conv
         # notice group=in_nc, i.e., each map use individual offset and mask
         self.deform_conv = ModulatedDeformConv2d(
-            in_nc, out_nc, deform_ks, padding=deform_ks//2, deformable_groups=in_nc
-        )
+            in_nc,
+            out_nc,
+            deform_ks,
+            padding=deform_ks // 2,
+            deformable_groups=in_nc)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -94,18 +98,14 @@ class STDF(nn.Module):
         # feature reconstruction (with up-sampling)
         for i in range(self.nb - 1, 0, -1):
             up_conv = getattr(self, 'up_conv{}'.format(i))
-            out = up_conv(
-                torch.cat([out, out_lst[i]], 1)
-            )
+            out = up_conv(torch.cat([out, out_lst[i]], 1))
 
         # compute offset and mask
         # offset: conv offset
         # mask: confidence
         off_msk = self.offset_mask(self.out_conv(out))
-        off = off_msk[:, :self.in_nc*2*n_off_msk, ...]
-        msk = torch.sigmoid(
-            off_msk[:, self.in_nc*2*n_off_msk:, ...]
-        )
+        off = off_msk[:, :self.in_nc * 2 * n_off_msk, ...]
+        msk = torch.sigmoid(off_msk[:, self.in_nc * 2 * n_off_msk:, ...])
 
         # perform deformable convolutional fusion
         fused_feat = self.relu(self.deform_conv(x, off, msk))
@@ -113,6 +113,7 @@ class STDF(nn.Module):
 
 
 class QENet(nn.Module):
+
     def __init__(self, in_nc=64, nf=48, nb=6, out_nc=3, base_ks=3):
         """
         Args:
@@ -167,17 +168,18 @@ class STDFNet(nn.Module):
             Default: 3.
     """
 
-    def __init__(self,
-                 in_channels=3,
-                 out_channels=3,
-                 radius=3,
-                 nf_stdf=32,
-                 nb_stdf=3,
-                 nf_stdf_out=64,  # also nf_qe_in
-                 deform_ks=3,
-                 nf_qe=48,
-                 nb_qe=6,
-                 ):
+    def __init__(
+        self,
+        in_channels=3,
+        out_channels=3,
+        radius=3,
+        nf_stdf=32,
+        nb_stdf=3,
+        nf_stdf_out=64,  # also nf_qe_in
+        deform_ks=3,
+        nf_qe=48,
+        nb_qe=6,
+    ):
         super().__init__()
 
         self.in_channels = in_channels
@@ -222,7 +224,7 @@ class STDFNet(nn.Module):
         out = self.stdf(x)
         out = self.qenet(out)
 
-        out += x[:, self.input_len//2, ...]  # res: add middle frame
+        out += x[:, self.input_len // 2, ...]  # res: add middle frame
         return out
 
     def init_weights(self, pretrained=None, strict=True):

@@ -19,6 +19,7 @@
   - [7. Q&A](#7-qa)
     - [7.1 Main Differences from the Original Papers](#71-main-differences-from-the-original-papers)
     - [7.2 How to Use the Latest MMEditing](#72-how-to-use-the-latest-mmediting)
+    - [7.3 Supports for Image Datasets](#73-supports-for-image-datasets)
   - [8. Licenses](#8-licenses)
 
 ## 1. Introduction
@@ -34,8 +35,6 @@ We also implement some SR baseline models for quality enhancement as follows:
 
 - [BasicVSR++](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/basicvsr_plusplus/README.md): Winner of the NTIRE 2021 VSR challenge.
 - [EDVR](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/edvr/README.md): Winner of the NTIRE 2019 VSR challenge.
-
-For enhancing the quality of compressed images, you may refer to [PowerQE](https://github.com/ryanxingql/powerqe).
 
 ## 2. Performance
 
@@ -161,7 +160,7 @@ python generate_data_dir_for_dcad.py -label valid -src-dir <your-data-dir>/ldv_v
 
 ### 4.2 MFQEv2 Dataset
 
-We use the [MFQEv2 [dataset](https://github.com/ryanxingql/mfqev2.0/wiki/MFQEv2-Dataset) for testing in addition to the LDVv2 test set.
+We use the [MFQEv2 dataset](https://github.com/ryanxingql/mfqev2.0/wiki/MFQEv2-Dataset) for testing in addition to the LDVv2 test set.
 
 The test set includes 16 videos. Each raw video is compressed by HM 16.20 with the LDP, QP=37 setting.
 
@@ -227,22 +226,22 @@ powervqe/
 
 ## 5. Training
 
-The suggested commands are the same as those in MMediting.
+The suggested commands are the same as those in MMEditing.
 
-Change the `data['train_dataloader']['samples_per_gpu']` in the config file according to your GPU number, then run:
+Change the `data['train_dataloader']['samples_per_gpu']` in the config file according to your GPU number (It is strongly suggested to copy the config file and rename it according to your GPU number), then run:
 
 ```bash
 cd mmediting/
 
 chmod +x ./tools/dist_train.sh
 
-# suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2.py
+# suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py
 # and the gpu number is 4
 # then you should run:
 #conda activate open-mmlab && \
 #CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
-#./tools/dist_train.sh ./configs/restorers/basicvsr_plusplus/ldv_v2.py 4
+#./tools/dist_train.sh ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py 4
 conda activate open-mmlab && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
@@ -260,13 +259,13 @@ cd mmediting/
 conda activate open-mmlab && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
-./tools/dist_train.sh ./configs/restorers/mfqev2/ldv_v2_non_pqf.py 4
+./tools/dist_train.sh ./configs/restorers/mfqev2/ldv_v2_non_pqf_4gpus.py 4
 
 # PQF
 conda activate open-mmlab && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
-./tools/dist_train.sh ./configs/restorers/mfqev2/ldv_v2_pqf.py 4
+./tools/dist_train.sh ./configs/restorers/mfqev2/ldv_v2_pqf_4gpus.py 4
 ```
 
 ## 6. Test
@@ -282,7 +281,7 @@ cd mmediting/
 
 chmod +x ./tools/dist_test.sh
 
-# suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2.py
+# suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py
 # your pre-trained model is located at ./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth
 # you want to use 4 gpus
 # and you want to save images at ./work_dirs/basicvsrpp_ldv_v2/500k/ldv
@@ -291,7 +290,7 @@ chmod +x ./tools/dist_test.sh
 #CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
 #./tools/dist_test.sh \
-#./configs/restorers/basicvsr_plusplus/ldv_v2.py \
+#./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py \
 #./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth \
 #4 \
 #--save-path ./work_dirs/basicvsrpp_ldv_v2/500k/ldv_v2
@@ -313,7 +312,7 @@ conda activate open-mmlab && \
 python test.py -gpu 0 \
 -inp-dir '../data/mfqe_v2/test_lq' \
 -out-dir '../work_dirs/basicvsrpp_ldv_v2/300k/mfqe_v2/' \
--config-path '../configs/restorers/basicvsr_plusplus/ldv_v2.py' \
+-config-path '../configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py' \
 -model-path '../work_dirs/basicvsrpp_ldv_v2/iter_300000.pth'
 ```
 
@@ -327,7 +326,7 @@ conda activate open-mmlab && \
 python test.py -gpu 0 \
 -inp-dir '../data/ldv_v2/test_lq' \
 -out-dir '../work_dirs/dcad_ldv_v2/500k/ldv_v2/' \
--config-path '../configs/restorers/dcad/ldv_v2.py' \
+-config-path '../configs/restorers/dcad/ldv_v2_4gpus.py' \
 -model-path '../work_dirs/dcad_ldv_v2/iter_500000.pth' \
 -if-img
 
@@ -336,7 +335,7 @@ conda activate open-mmlab && \
 python test.py -gpu 0 \
 -inp-dir '../data/mfqe_v2/test_lq' \
 -out-dir '../work_dirs/dcad_ldv_v2/500k/mfqe_v2/' \
--config-path '../configs/restorers/dcad/ldv_v2.py' \
+-config-path '../configs/restorers/dcad/ldv_v2_4gpus.py' \
 -model-path '../work_dirs/dcad_ldv_v2/iter_500000.pth' \
 -if-img
 ```
@@ -349,7 +348,7 @@ conda activate open-mmlab && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_test.sh \
-./configs/restorers/mfqev2/ldv_v2_non_pqf.py \
+./configs/restorers/mfqev2/ldv_v2_non_pqf_4gpus.py \
 ./work_dirs/mfqev2_ldv_v2_non_pqf/iter_600000.pth \
 4 \
 --save-path ./work_dirs/mfqev2_ldv_v2/ldv_v2
@@ -359,7 +358,7 @@ conda activate open-mmlab && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_test.sh \
-./configs/restorers/mfqev2/ldv_v2_pqf.py \
+./configs/restorers/mfqev2/ldv_v2_pqf_4gpus.py \
 ./work_dirs/mfqev2_ldv_v2_pqf/iter_600000.pth \
 4 \
 --save-path ./work_dirs/mfqev2_ldv_v2/ldv_v2
@@ -424,8 +423,8 @@ MFQEv2:
 
 Here are some important files to run our codes. You can simply copy these files to the latest MMEditing repo.
 
-- `mmediting/configs/restorers/{basicvsr_plusplus,dcad,dncnn,edvr,stdf}/ldv_v2.py`
-- `mmediting/configs/restorers/mfqev2/ldv_v2_{non_pqf,pqf}.py`
+- `mmediting/configs/restorers/{basicvsr_plusplus,dcad,dncnn,edvr,stdf}/ldv_v2_4gpus.py`
+- `mmediting/configs/restorers/mfqev2/ldv_v2_{non_pqf,pqf}_4gpus.py`
 - `mmediting/mmedit/models/backbones/sr_backbones/{basicvsr_pp_no_mirror,dcad,dncnn,edvr_net,mfqev2,stdf}.py`
 - `mmediting/mmedit/models/restorers/{basicvsr,mfqev2_restorer,stdf}.py`
 - `mmediting/mmedit/datasets/pipelines/augmentation.py`
@@ -434,8 +433,61 @@ Here are some important files to run our codes. You can simply copy these files 
 - `mmediting/mmedit/apis/restoration_video_inference.py`
 - `mmediting/toolbox_test`
 
+### 7.3 Supports for Image Datasets
+
+First, prepare your image dataset. Take the DIV2K dataset as an example. Layout:
+
+```text
+powervqe/
+`-- mmediting/
+    `-- data/
+        |-- div2k/
+            |-- train_hq/
+            |   |-- 0001.png
+            |   |-- ...
+            |   `-- 0800.png
+            |-- train_lq/
+            |   |-- qp27
+            |   |   |-- 0001.png
+            |   |   |-- ...
+            |   |   `-- 0800.png
+            |   |-- qp32
+            |   |-- qp37
+            |   |-- qp42
+            |   |-- qf20
+            |   |   |-- 0001.jpg
+            |   |   |-- ...
+            |   |   `-- 0800.jpg
+            |   |-- qf30
+            |   |-- qf40
+            |   `-- qf50
+            |-- valid_hq/
+            |   |-- 0801.png
+            |   |-- ...
+            |   `-- 0900.png
+            `-- valid_lq/
+                |-- qp27
+                |   |-- 0801.png
+                |   |-- ...
+                |   `-- 0900.png
+                |-- qp32
+                |-- qp37
+                |-- qp42
+                |-- qf20
+                |   |-- 0801.jpg
+                |   |-- ...
+                |   `-- 0900.jpg
+                |-- qf30
+                |-- qf40
+                `-- qf50
+```
+
+Example config files are also presented in `mmediting/configs/` for some approaches, e.g., DCAD and DnCNN.
+
+Note that for simplicity, we first train the `QP=37` and `QF=50` models, and then fine-tune them to get other models.
+
 ## 8. Licenses
 
-We adopt Apache License v2.0. For other licenses, see MMEditing.
+We adopt Apache License 2.0. For other licenses, see MMEditing.
 
 Enjoy this repo. Star it if you like it ^ ^

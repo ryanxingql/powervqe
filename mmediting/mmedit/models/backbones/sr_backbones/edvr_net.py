@@ -517,8 +517,10 @@ class EDVRNetQE(nn.Module):
         self.ds_mul = 16  # 2 times x2 down-sampling (4x) and 3-level feature extraction (4x)
 
         # ryanxingql
-        self.conv_ds1 = nn.Conv2d(in_channels, mid_channels, kernel_size=3, stride=2, padding=1)
-        self.conv_ds2 = nn.Conv2d(mid_channels, mid_channels, kernel_size=3, stride=2, padding=1)
+        self.conv_ds1 = nn.Conv2d(
+            in_channels, mid_channels, kernel_size=3, stride=2, padding=1)
+        self.conv_ds2 = nn.Conv2d(
+            mid_channels, mid_channels, kernel_size=3, stride=2, padding=1)
 
         # self.conv_first = nn.Conv2d(mid_channels, mid_channels, 3, 1, 1)
         self.feature_extraction = make_layer(
@@ -585,7 +587,8 @@ class EDVRNetQE(nn.Module):
         if_pad = False
         if dh != 0 or dw != 0:
             if_pad = True
-            x = nnF.pad(x, (dw//2, dw-dw//2, dh//2, dh-dh//2), "reflect")
+            x = nnF.pad(x, (dw // 2, dw - dw // 2, dh // 2, dh - dh // 2),
+                        "reflect")
         # assert h % 4 == 0 and w % 4 == 0, (
         #     'The height and width of inputs should be a multiple of 4, '
         #     f'but got {h} and {w}.')
@@ -604,9 +607,9 @@ class EDVRNetQE(nn.Module):
         # L3
         l3_feat = self.feat_l3_conv2(self.feat_l3_conv1(l2_feat))
 
-        l1_feat = l1_feat.view(n, t, -1, h_up//4, w_up//4)
-        l2_feat = l2_feat.view(n, t, -1, h_up//8, w_up//8)
-        l3_feat = l3_feat.view(n, t, -1, h_up//16, w_up//16)
+        l1_feat = l1_feat.view(n, t, -1, h_up // 4, w_up // 4)
+        l2_feat = l2_feat.view(n, t, -1, h_up // 8, w_up // 8)
+        l3_feat = l3_feat.view(n, t, -1, h_up // 16, w_up // 16)
 
         # pcd alignment
         ref_feats = [  # reference feature list
@@ -626,7 +629,7 @@ class EDVRNetQE(nn.Module):
         if self.with_tsa:
             feat = self.fusion(aligned_feat)
         else:
-            aligned_feat = aligned_feat.view(n, -1, h_up//4, w_up//4)
+            aligned_feat = aligned_feat.view(n, -1, h_up // 4, w_up // 4)
             feat = self.fusion(aligned_feat)
 
         # reconstruction
@@ -637,7 +640,7 @@ class EDVRNetQE(nn.Module):
         out = self.conv_last(out)
 
         if if_pad:
-            out = out[..., dh//2:dh//2+h, dw//2:dw//2+w]
+            out = out[..., dh // 2:dh // 2 + h, dw // 2:dw // 2 + w]
 
         out += x_center
         return out
@@ -674,4 +677,3 @@ class EDVRNetQE(nn.Module):
         else:
             raise TypeError(f'"pretrained" must be a str or None. '
                             f'But received {type(pretrained)}.')
-

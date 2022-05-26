@@ -1,10 +1,10 @@
-exp_name = 'dcad_ldv_v2'
+exp_name = 'arcnn_div2k_qp42'
 
 # model settings
 model = dict(
     type='BasicRestorer',
     generator=dict(
-        type='DCAD',
+        type='ARCNN',
         in_channels=3,
         out_channels=3,
         mid_channels=64,
@@ -23,7 +23,8 @@ train_pipeline = [
         type='LoadImageFromFile',
         io_backend='disk',
         key='lq',
-        flag='unchanged'),  # keep the color type. ref: https://mmcv.readthedocs.io/en/latest/api.html#mmcv.image.imread
+        flag='unchanged'
+    ),  # keep the color type. ref: https://mmcv.readthedocs.io/en/latest/api.html#mmcv.image.imread
     dict(
         type='LoadImageFromFile',
         io_backend='disk',
@@ -38,10 +39,8 @@ train_pipeline = [
         to_rgb=True),
     dict(type='PairedRandomCrop', gt_patch_size=128),  # 38 in the paper
     dict(
-        type='Flip', keys=['lq', 'gt'],
-        flip_ratio=0.5,
-        direction='horizontal'
-    ),
+        type='Flip', keys=['lq', 'gt'], flip_ratio=0.5,
+        direction='horizontal'),
     dict(type='Flip', keys=['lq', 'gt'], flip_ratio=0.5, direction='vertical'),
     dict(type='RandomTransposeHW', keys=['lq', 'gt'], transpose_ratio=0.5),
     dict(type='Collect', keys=['lq', 'gt'], meta_keys=['lq_path', 'gt_path']),
@@ -71,7 +70,8 @@ test_pipeline = [
 
 data = dict(
     workers_per_gpu=8,
-    train_dataloader=dict(samples_per_gpu=8, drop_last=True),  # not indicated in the paper; assumed to be 32 in total
+    train_dataloader=dict(samples_per_gpu=16,
+                          drop_last=True),  # 128 in the paper; here we use 32
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
@@ -79,27 +79,22 @@ data = dict(
         times=100,
         dataset=dict(
             type=train_dataset_type,
-            lq_folder='data/ldv_v2/train_lq_10_frms_max_per_vid',
-            gt_folder='data/ldv_v2/train_gt_10_frms_max_per_vid',
+            lq_folder='data/div2k/train_lq/qp42',
+            gt_folder='data/div2k/train_hq',
             pipeline=train_pipeline,
-            scale=1
-        )
-    ),
+            scale=1)),
     val=dict(
         type=val_dataset_type,
-        lq_folder='data/ldv_v2/valid_lq_10_frms_max_per_vid',
-        gt_folder='data/ldv_v2/valid_gt_10_frms_max_per_vid',
+        lq_folder='data/div2k/valid_lq/qp42',
+        gt_folder='data/div2k/valid_hq',
         pipeline=test_pipeline,
-        scale=1
-    ),
+        scale=1),
     test=dict(
         type=val_dataset_type,
-        lq_folder='data/ldv_v2/test_lq/001',  # 002, 003, ... 015; recommend demo pipeline, see README
-        gt_folder='data/ldv_v2/test_gt/001',  # 002, 003, ... 015; recommend demo pipeline, see README
+        lq_folder='data/div2k/valid_lq/qp42',
+        gt_folder='data/div2k/valid_hq',
         pipeline=test_pipeline,
-        scale=1
-    )
-)
+        scale=1))
 
 # optimizer
 lr_main = 1e-4  # 1 in the paper
@@ -111,18 +106,16 @@ optimizers = dict(
         #    custom_keys={'conv_after_body': dict(lr_mult=0.1)},
         #    bias_lr_mult=0.1,
         #)
-    )
-)
+    ))
 
 # learning policy
-total_iters = 500000  # not indicated in the paper
+total_iters = 300000  # not indicated in the paper
 lr_config = dict(
     policy='CosineRestart',
     by_epoch=False,
     periods=[total_iters],
     restart_weights=[1],
-    min_lr=lr_main/1e3
-)  # not indicated in the paper
+    min_lr=lr_main / 1e3)  # not indicated in the paper
 
 checkpoint_config = dict(interval=5000, save_optimizer=True, by_epoch=False)
 evaluation = dict(interval=5000, save_image=False, gpu_collect=True)
@@ -138,6 +131,6 @@ visual_config = None
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = f'./work_dirs/{exp_name}'
-load_from = None
+load_from = './work_dirs/arcnn_div2k_qp37/latest.pth'
 resume_from = None
 workflow = [('train', 1)]

@@ -21,7 +21,11 @@ val_dataset_type = 'SRFolderMultipleGTDataset'
 test_dataset_type = 'SRFolderMultipleGTDataset'
 
 train_pipeline = [
-    dict(type='GenerateSegmentIndices', interval_list=[1], start_idx=1, filename_tmpl='f{:03d}.png'),
+    dict(
+        type='GenerateSegmentIndices',
+        interval_list=[1],
+        start_idx=1,
+        filename_tmpl='f{:03d}.png'),
     dict(
         type='LoadImageFromFileList',
         io_backend='disk',
@@ -34,7 +38,9 @@ train_pipeline = [
         channel_order='rgb'),
     dict(type='RescaleToZeroOne', keys=['lq', 'gt']),
     dict(type='PairedRandomCrop', gt_patch_size=256),
-    dict(type='Flip', keys=['lq', 'gt'], flip_ratio=0.5, direction='horizontal'),
+    dict(
+        type='Flip', keys=['lq', 'gt'], flip_ratio=0.5,
+        direction='horizontal'),
     dict(type='Flip', keys=['lq', 'gt'], flip_ratio=0.5, direction='vertical'),
     dict(type='RandomTransposeHW', keys=['lq', 'gt'], transpose_ratio=0.5),
     dict(type='FramesToTensor', keys=['lq', 'gt']),
@@ -42,7 +48,11 @@ train_pipeline = [
 ]
 
 val_pipeline = [
-    dict(type='GenerateSegmentIndices', interval_list=[1], start_idx=1, filename_tmpl='f{:03d}.png'),
+    dict(
+        type='GenerateSegmentIndices',
+        interval_list=[1],
+        start_idx=1,
+        filename_tmpl='f{:03d}.png'),
     dict(
         type='LoadImageFromFileList',
         io_backend='disk',
@@ -62,7 +72,11 @@ val_pipeline = [
 ]
 
 test_pipeline = [
-    dict(type='GenerateSegmentIndices', interval_list=[1], start_idx=1, filename_tmpl='f{:03d}.png'),
+    dict(
+        type='GenerateSegmentIndices',
+        interval_list=[1],
+        start_idx=1,
+        filename_tmpl='f{:03d}.png'),
     dict(
         type='LoadImageFromFileList',
         io_backend='disk',
@@ -82,7 +96,11 @@ test_pipeline = [
 ]
 
 demo_pipeline = [
-    dict(type='GenerateSegmentIndices', interval_list=[1], start_idx=1, filename_tmpl='f{:03d}.png'),
+    dict(
+        type='GenerateSegmentIndices',
+        interval_list=[1],
+        start_idx=1,
+        filename_tmpl='f{:03d}.png'),
     dict(
         type='LoadImageFromFileList',
         io_backend='disk',
@@ -124,8 +142,10 @@ data = dict(
     # test
     test=dict(
         type=test_dataset_type,
-        lq_folder='data/ldv_v2/test_lq',  # 'data/ldv_v2/test_lq'; to test the mfqev2 dataset, please use my codes in toolbox_test; see README
-        gt_folder='data/ldv_v2/test_gt',  # 'data/ldv_v2/test_gt'; to test the mfqev2 dataset, please use my codes in toolbox_test; see README
+        lq_folder=
+        'data/ldv_v2/test_lq',  # 'data/ldv_v2/test_lq'; to test the mfqev2 dataset, please use my codes in toolbox_test; see README
+        gt_folder=
+        'data/ldv_v2/test_gt',  # 'data/ldv_v2/test_gt'; to test the mfqev2 dataset, please use my codes in toolbox_test; see README
         pipeline=test_pipeline,
         scale=1,
         test_mode=True),
@@ -144,13 +164,13 @@ optimizers = dict(
 total_iters = 300000
 lr_config = dict(
     warmup='linear',
-    warmup_iters=total_iters//10,
+    warmup_iters=total_iters // 10,
     warmup_ratio=1e-3,
     policy='CosineRestart',
     by_epoch=False,
     periods=[total_iters],
     restart_weights=[1],
-    min_lr=lr_main/1e3)
+    min_lr=lr_main / 1e3)
 
 checkpoint_config = dict(interval=5000, save_optimizer=True, by_epoch=False)
 # remove gpu_collect=True in non-distributed training

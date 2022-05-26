@@ -24,7 +24,7 @@ class DCAD(nn.Module):
                  in_channels,
                  out_channels,
                  mid_channels=64,
-                 num_blocks=8,):
+                 num_blocks=8):
         super().__init__()
 
         self.in_channels = in_channels
@@ -41,10 +41,9 @@ class DCAD(nn.Module):
             ]
         self.body = nn.Sequential(*body_)
 
-        self.conv_after_body = nn.Sequential(*[
-            nn.ReLU(),
-            nn.Conv2d(mid_channels, out_channels, 3, padding=1)
-        ])
+        self.conv_after_body = nn.Sequential(
+            *[nn.ReLU(),
+              nn.Conv2d(mid_channels, out_channels, 3, padding=1)])
 
     def forward(self, x):
         """Forward function.

@@ -482,7 +482,9 @@ powervqe/
                 `-- qf50
 ```
 
-Example config files are also presented in `mmediting/configs/` for some approaches, e.g., DCAD and DnCNN.
+Example config files are also presented in `mmediting/configs/` for some approaches, e.g., AR-CNN, DCAD, and DnCNN.
+
+[AR-CNN](https://arxiv.org/abs/1504.06993): Change the training patch size from 32 to 128.
 
 Note that for simplicity, we first train the `QP=37` and `QF=50` models, and then fine-tune them to get other models.
 

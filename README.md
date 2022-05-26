@@ -441,7 +441,7 @@ First, prepare your image dataset. Take the DIV2K dataset as an example. Layout:
 powervqe/
 `-- mmediting/
     `-- data/
-        |-- div2k/
+        `-- div2k/
             |-- train_hq/
             |   |-- 0001.png
             |   |-- ...

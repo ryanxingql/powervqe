@@ -6,10 +6,14 @@ model = dict(
     generator=dict(
         type='ARCNN',
         in_channels=3,
+        mid_channels_1=64,
+        mid_channels_2=32,
+        mid_channels_3=16,
         out_channels=3,
-        mid_channels=64,
-        num_blocks=8,
-    ),
+        in_kernel_size=9,
+        mid_kernel_size_1=7,
+        mid_kernel_size_2=1,
+        out_kernel_size=5),
     pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'))
 # model training and testing settings
 train_cfg = None

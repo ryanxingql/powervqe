@@ -396,25 +396,25 @@ Note: We ignore the PSNR of the first frame of video *002* in the LDVv2 dataset 
 
 ### 7.1 Main Differences from the Original Papers
 
-DCAD:
+To improve the performance of DCAD,
 
-1. Change the training patch size from 38 to 128.
-2. Change the LR from 1 to 1e-4.
-3. Change AdaDelta to Adam.
+1. The training patch size is changed from 38 to 128.
+2. The LR is changed from 1 to 1e-4.
+3. The optimizer is changed from AdaDelta to Adam.
 
-DnCNN:
+To improve the performance of DnCNN,
 
-1. Change the training patch size from 40 to 128.
-2. Change the LR from 0.1 to 1e-4.
-3. Change SGD to Adam.
-4. Different from [PowerQE](https://github.com/ryanxingql/powerqe), we turn on batch normalization for DnCNN. It benefits the convergence of DnCNN.
+1. The training patch size is changed from 40 to 128.
+2. The LR is changed from 0.1 to 1e-4.
+3. The optimizer is changed from SGD to Adam.
+4. Different from [PowerQE](https://github.com/ryanxingql/powerqe), the batch normalization is turned on. It benefits the convergence of DnCNN.
 
-EDVR:
+To simplify the training of EDVR,
 
-1. Conducts 4x downsampling to the input frames (by strided convolutions) first. Downsampling can result in lower GPU consumption and faster training speed. Besides, we can use an SR model for quality enhancement this way.
-2. Change the multi-step CosineRestart to a single-step CosineRestart.
+1. The input frames are 4x downsampled by strided convolutions. Downsampling can result in lower GPU consumption and faster training speed. Besides, we can use an SR model for quality enhancement this way.
+2. The scheduler is changed from the multi-step CosineRestart to a single-step CosineRestart.
 
-MFQEv2:
+To simplify the training of MFQEv2,
 
 1. Instead of conducting PQF detection, we assume that PQFs are located at the first, 5-th, 9-th, ... frames.
 2. Instead of training a ME-MC subnet from scratch, we use a pre-trained SpyNet.
@@ -482,9 +482,14 @@ powervqe/
                 `-- qf50
 ```
 
-Example config files are also presented in `mmediting/configs/` for some approaches, e.g., AR-CNN, DCAD, and DnCNN.
+Example config files are presented in `mmediting/configs/` for some approaches as follows,
 
-[AR-CNN](https://arxiv.org/abs/1504.06993): Change the training patch size from 32 to 128.
+- [AR-CNN](https://arxiv.org/abs/1504.06993): To improve the performance, the training patch size is changed from 32 to 128.
+- DCAD
+- DnCNN
+- RDN: To avoid memory out during the testing, the input frames are 4x downsampled by strided convolutions.
+
+You can download the pre-trained models at the latest Releases.
 
 Note that for simplicity, we first train the `QP=37` and `QF=50` models, and then fine-tune them to get other models.
 

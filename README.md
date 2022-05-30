@@ -33,8 +33,8 @@ We implement some widely-used quality enhancement approaches for compressed vide
 
 We also implement some SR baseline models for quality enhancement as follows:
 
-- [BasicVSR++](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/basicvsr_plusplus/README.md): Winner of the NTIRE 2021 VSR challenge.
-- [EDVR](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/edvr/README.md): Winner of the NTIRE 2019 VSR challenge.
+- [BasicVSR++ (CVPR 2022)](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/basicvsr_plusplus/README.md): Winner of the NTIRE 2021 VSR challenge.
+- [EDVR (CVPRW 2019)](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/edvr/README.md): Winner of the NTIRE 2019 VSR challenge.
 
 ## 2. Performance
 
@@ -484,10 +484,10 @@ powervqe/
 
 Example config files are presented in `mmediting/configs/` for some approaches as follows,
 
-- [AR-CNN](https://arxiv.org/abs/1504.06993): To improve the performance, the training patch size is changed from 32 to 128.
-- DCAD
-- DnCNN
-- RDN: To avoid memory out during the testing, the input frames are 4x downsampled by strided convolutions.
+- [AR-CNN (ICCV 2015)](https://arxiv.org/abs/1504.06993): To improve the performance, the training patch size is changed from 32 to 128.
+- [DCAD (DCC 2017)](https://ieeexplore.ieee.org/abstract/document/7923714/)
+- [DnCNN (TIP 2017)](https://arxiv.org/abs/1608.03981)
+- [RDN (CVPR 2018)](https://arxiv.org/abs/1802.08797): To avoid memory out during the testing, the input frames are 4x downsampled by strided convolutions.
 
 You can download the pre-trained models at the latest Releases.
 

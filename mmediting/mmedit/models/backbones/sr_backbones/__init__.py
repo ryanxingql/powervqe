@@ -19,6 +19,7 @@ from .ttsr_net import TTSRNet
 from .basicvsr_pp_no_mirror import BasicVSRPlusPlusNoMirror
 
 from .arcnn import ARCNN
+from .cbdnet import CBDNet
 from .dcad import DCAD
 from .dncnn import DnCNN
 from .edvr_net import EDVRNetQE
@@ -30,6 +31,6 @@ __all__ = [
     'MSRResNet', 'RRDBNet', 'EDSR', 'EDVRNet', 'TOFlow', 'SRCNN', 'DICNet',
     'BasicVSRNet', 'IconVSR', 'RDN', 'TTSRNet', 'GLEANStyleGANv2', 'TDANNet',
     'LIIFEDSR', 'LIIFRDN', 'BasicVSRPlusPlus', 'RealBasicVSRNet', 'ARCNN',
-    'BasicVSRPlusPlusNoMirror', 'DCAD', 'DnCNN', 'EDVRNetQE', 'MFQEv2',
-    'RDNQE', 'STDFNet'
+    'BasicVSRPlusPlusNoMirror', 'CBDNet', 'DCAD', 'DnCNN', 'EDVRNetQE',
+    'MFQEv2', 'RDNQE', 'STDFNet'
 ]

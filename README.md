@@ -484,10 +484,12 @@ powervqe/
 
 Example config files are presented in `mmediting/configs/` for some approaches as follows,
 
-- [AR-CNN (ICCV 2015)](https://arxiv.org/abs/1504.06993): To improve the performance, the training patch size is changed from 32 to 128.
-- [DCAD (DCC 2017)](https://ieeexplore.ieee.org/abstract/document/7923714/)
-- [DnCNN (TIP 2017)](https://arxiv.org/abs/1608.03981)
+- [RBQE (ECCV 2020)](https://arxiv.org/abs/2006.16581): To improve the performance, it is trained in a non-blind manner.
+- [CBDNet (CVPR 2019)](https://arxiv.org/abs/1807.04686): To improve the performance, it is trained in an end-to-end manner without the TV loss. Also, it is trained in a non-blind manner.
 - [RDN (CVPR 2018)](https://arxiv.org/abs/1802.08797): To avoid memory out during the testing, the input frames are 4x downsampled by strided convolutions.
+- [DCAD (DCC 2017)](https://ieeexplore.ieee.org/abstract/document/7923714)
+- [DnCNN (TIP 2017)](https://arxiv.org/abs/1608.03981)
+- [AR-CNN (ICCV 2015)](https://arxiv.org/abs/1504.06993): To improve the performance, the training patch size is changed from 32 to 128.
 
 You can download the pre-trained models at the latest Releases.
 

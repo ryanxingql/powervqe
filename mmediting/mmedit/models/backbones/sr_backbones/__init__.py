@@ -24,6 +24,7 @@ from .dcad import DCAD
 from .dncnn import DnCNN
 from .edvr_net import EDVRNetQE
 from .mfqev2 import MFQEv2
+from .rbqe import RBQE
 from .rdn import RDNQE
 from .stdf import STDFNet
 
@@ -32,5 +33,5 @@ __all__ = [
     'BasicVSRNet', 'IconVSR', 'RDN', 'TTSRNet', 'GLEANStyleGANv2', 'TDANNet',
     'LIIFEDSR', 'LIIFRDN', 'BasicVSRPlusPlus', 'RealBasicVSRNet', 'ARCNN',
     'BasicVSRPlusPlusNoMirror', 'CBDNet', 'DCAD', 'DnCNN', 'EDVRNetQE',
-    'MFQEv2', 'RDNQE', 'STDFNet'
+    'MFQEv2', 'RBQE', 'RDNQE', 'STDFNet'
 ]

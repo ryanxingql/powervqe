@@ -307,58 +307,66 @@ class Down(nn.Module):
 
         super().__init__()
 
-        down_list = nn.ModuleList([nn.ReLU()])
         if if_separable and if_eca:
-            down_list += [
+            down_list = nn.ModuleList([
+                nn.ReLU(),
                 ECA(k_size=3),
                 SeparableConv2d(nf_in=nf_in, nf_out=nf_in),
-            ]
+            ])
         elif if_separable and (not if_eca):
-            down_list.append(SeparableConv2d(nf_in=nf_in, nf_out=nf_in))
+            down_list = nn.ModuleList(
+                [nn.ReLU(),
+                 SeparableConv2d(nf_in=nf_in, nf_out=nf_in)])
         elif (not if_separable) and if_eca:
-            down_list += [
+            down_list = nn.ModuleList([
+                nn.ReLU(),
                 ECA(k_size=3),
                 nn.Conv2d(
                     in_channels=nf_in,
                     out_channels=nf_in,
                     kernel_size=3,
                     padding=3 // 2,
-                ),
-            ]
+                )
+            ])
         else:
-            down_list.append(
+            down_list = nn.ModuleList([
+                nn.ReLU(),
                 nn.Conv2d(
                     in_channels=nf_in,
                     out_channels=nf_in,
                     kernel_size=3,
                     padding=3 // 2,
-                ))
-
-        down_list.append(nn.ReLU(inplace=False))
+                )
+            ])
 
         if method == 'avepool2d':
-            down_list.append(nn.AvgPool2d(kernel_size=2))
+            down_list += [nn.AvgPool2d(kernel_size=2)]
         elif method == 'strideconv':
             down_list += [
+                nn.ReLU(),
                 nn.Conv2d(
                     in_channels=nf_in,
                     out_channels=nf_out,
                     kernel_size=3,
                     padding=3 // 2,
                     stride=2,
-                ),
-                nn.ReLU(inplace=False),
+                )
             ]
 
         if if_separable and if_eca:
             down_list += [
+                nn.ReLU(),
                 ECA(k_size=3),
                 SeparableConv2d(nf_in=nf_out, nf_out=nf_in),
             ]
         elif if_separable and (not if_eca):
-            down_list.append(SeparableConv2d(nf_in=nf_out, nf_out=nf_in))
+            down_list += [
+                nn.ReLU(),
+                SeparableConv2d(nf_in=nf_out, nf_out=nf_in)
+            ]
         elif (not if_separable) and if_eca:
             down_list += [
+                nn.ReLU(),
                 ECA(k_size=3),
                 nn.Conv2d(
                     in_channels=nf_out,
@@ -368,13 +376,15 @@ class Down(nn.Module):
                 ),
             ]
         else:
-            down_list.append(
+            down_list += [
+                nn.ReLU(),
                 nn.Conv2d(
                     in_channels=nf_out,
                     out_channels=nf_out,
                     kernel_size=3,
                     padding=3 // 2,
-                ))
+                )
+            ]
 
         self.down_sep = nn.Sequential(*down_list)
 
@@ -395,18 +405,19 @@ class Up(nn.Module):
         if method == 'upsample':
             self.up = nn.Upsample(scale_factor=2)
         elif method == 'transpose2d':
-            self.up = nn.ConvTranspose2d(
-                in_channels=nf_in_s,
-                out_channels=nf_out,
-                kernel_size=3,
-                stride=2,
-                padding=1,
-            )
-
-        self.relu = nn.ReLU()
+            self.up = nn.Sequential(
+                nn.ReLU(),
+                nn.ConvTranspose2d(
+                    in_channels=nf_in_s,
+                    out_channels=nf_out,
+                    kernel_size=3,
+                    stride=2,
+                    padding=1,
+                ))
 
         if if_separable and if_eca:
             conv_list = nn.ModuleList([
+                nn.ReLU(),
                 ECA(k_size=3),
                 SeparableConv2d(nf_in=nf_in, nf_out=nf_out),
                 nn.ReLU(),
@@ -415,12 +426,14 @@ class Up(nn.Module):
             ])
         elif if_separable and (not if_eca):
             conv_list = nn.ModuleList([
+                nn.ReLU(),
                 SeparableConv2d(nf_in=nf_in, nf_out=nf_out),
                 nn.ReLU(),
                 SeparableConv2d(nf_in=nf_out, nf_out=nf_out),
             ])
         elif (not if_separable) and if_eca:
             conv_list = nn.ModuleList([
+                nn.ReLU(),
                 ECA(k_size=3),
                 nn.Conv2d(
                     in_channels=nf_in,
@@ -439,6 +452,7 @@ class Up(nn.Module):
             ])
         else:
             conv_list = nn.ModuleList([
+                nn.ReLU(),
                 nn.Conv2d(
                     in_channels=nf_in,
                     out_channels=nf_out,
@@ -480,7 +494,7 @@ class Up(nn.Module):
 
             feat = torch.cat((feat, *normal_t_list), dim=1)
 
-        out_t = self.conv_seq(self.relu(feat))
+        out_t = self.conv_seq(feat)
         return out_t
 
 
@@ -535,8 +549,6 @@ class RBQE(nn.Module):
                 ),
             )
 
-        self.relu_before_up = nn.ReLU()
-
         # down then up at each nested u-net
         for idx_unet in range(nlevel):
             setattr(
@@ -570,15 +582,14 @@ class RBQE(nn.Module):
         for _ in range(repeat_times):
             if if_separable and if_eca:
                 out_conv_seq = nn.Sequential(
-                    nn.ReLU(inplace=False), ECA(k_size=3),
+                    nn.ReLU(), ECA(k_size=3),
                     SeparableConv2d(nf_in=nf_base, nf_out=nf_out))
             elif if_separable and (not if_eca):
                 out_conv_seq = nn.Sequential(
-                    nn.ReLU(inplace=False),
-                    SeparableConv2d(nf_in=nf_base, nf_out=nf_out))
+                    nn.ReLU(), SeparableConv2d(nf_in=nf_base, nf_out=nf_out))
             elif (not if_separable) and if_eca:
                 out_conv_seq = nn.Sequential(
-                    nn.ReLU(inplace=False),
+                    nn.ReLU(),
                     ECA(k_size=3),
                     nn.Conv2d(
                         in_channels=nf_base,
@@ -589,7 +600,7 @@ class RBQE(nn.Module):
                 )
             else:
                 out_conv_seq = nn.Sequential(
-                    nn.ReLU(inplace=False),
+                    nn.ReLU(),
                     nn.Conv2d(
                         in_channels=nf_base,
                         out_channels=nf_out,
@@ -645,7 +656,7 @@ class RBQE(nn.Module):
 
                 up = getattr(self, f'up_{idx_unet}_{idx_up}')
                 feat_up = up(
-                    self.relu_before_up(feat_up_list[-1]),
+                    feat_up_list[-1],
                     *dense_inp_list,
                 )
                 feat_up_list.append(feat_up)

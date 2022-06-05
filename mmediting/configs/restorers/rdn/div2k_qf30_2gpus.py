@@ -95,11 +95,11 @@ data = dict(
 optimizers = dict(generator=dict(type='Adam', lr=1e-4, betas=(0.9, 0.999)))
 
 # learning policy
-total_iters = 1000000
+total_iters = 500000
 lr_config = dict(
     policy='Step',
     by_epoch=False,
-    step=[200000, 400000, 600000, 800000],
+    step=[100000, 200000, 300000, 400000],
     gamma=0.5)
 
 checkpoint_config = dict(interval=5000, save_optimizer=True, by_epoch=False)

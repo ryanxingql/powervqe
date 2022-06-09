@@ -38,7 +38,12 @@ We also implement some SR baseline models for quality enhancement as follows:
 
 ## 2. Performance
 
+[[TensorBoard]](https://github.com/ryanxingql/powervqe/wiki/TensorBoard) [[Pre-trained models]](https://github.com/ryanxingql/powervqe/releases/)
+
 RGB-PSNR results on the test set of the [LDVv2 dataset](https://arxiv.org/abs/2204.09314) for the NTIRE 2022 video quality enhancement challenge are as follows:
+
+<details>
+<summary>[Table Here]</summary>
 
 | Index | Video name | Width | Height | Frames | Frame rate | LQ     | DCAD   | DnCNN  | STDF   | MFQEv2 | EDVR   | BasicVSR++ |
 | ----- | ---------- | ----- | ------ | ------ | ---------- | ------ | ------ | ------ | ------ | ------ | ------ | ---------- |
@@ -60,7 +65,12 @@ RGB-PSNR results on the test set of the [LDVv2 dataset](https://arxiv.org/abs/22
 |       | Ave.       |       |        |        |            | 29.896 | 30.457 | 30.497 | 30.528 | 30.652 | 30.774 | 31.106     |
 |       | Delta PSNR |       |        |        |            |        | 0.561  | 0.601  | 0.632  | 0.756  | 0.878  | 1.209      |
 
+</details>
+
 Y-PSNR results on the test set (QP=37) of the [MFQEv2 dataset](https://github.com/ryanxingql/mfqev2.0/wiki/MFQEv2-Dataset) are as follows:
+
+<details>
+<summary>[Table Here]</summary>
 
 | Index | Video Name       | Width | Height | Frames | Frame rate | LQ     | DCAD   | DnCNN  | STDF   | MFQEv2 | EDVR   | BasicVSR++ |
 | ----- | ---------------- | ----- | ------ | ------ | ---------- | ------ | ------ | ------ | ------ | ------ | ------ | ---------- |
@@ -82,6 +92,8 @@ Y-PSNR results on the test set (QP=37) of the [MFQEv2 dataset](https://github.co
 | 16    | Kristen And Sara | 1280  | 720    | 600    | 60         | 34.609 | 35.205 | 35.227 | 35.272 | 35.370 | 35.534 | 35.857     |
 |       | Ave.             |       |        |        |            | 30.392 | 30.790 | 30.812 | 30.861 | 31.061 | 31.146 | 31.493     |
 |       | Delta PSNR       |       |        |        |            |        | 0.398  | 0.420  | 0.468  | 0.669  | 0.754  | 1.101      |
+
+</details>  
 
 Note: The performance of STDF (trained with RGB data) is slightly worse than that in this [repo](https://github.com/ryanxingql/stdf-pytorch) (trained with Y data).
 
@@ -270,7 +282,7 @@ PORT=29500 \
 
 ## 6. Test
 
-You can download the pre-trained models at the latest Releases.
+You can download the pre-trained models at the latest [Releases](https://github.com/ryanxingql/powervqe/releases/).
 
 The suggested commands are the same as those in MMEditing.
 
@@ -416,7 +428,7 @@ To simplify the training of EDVR,
 
 To simplify the training of MFQEv2,
 
-1. Instead of conducting PQF detection, we assume that PQFs are located at the first, 5-th, 9-th, ... frames.
+1. Instead of conducting PQF detection, we assume that PQFs are located at the first, fifth, ninth, and... frames.
 2. Instead of training a ME-MC subnet from scratch, we use a pre-trained SpyNet.
 
 ### 7.2 How to Use the Latest MMEditing

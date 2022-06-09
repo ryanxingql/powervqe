@@ -447,7 +447,7 @@ Here are some important files to run our codes. You can simply copy these files 
 
 ### 7.3 Supports for Image Datasets
 
-First, prepare your image dataset. Take the DIV2K dataset as an example. Layout:
+Prepare your image dataset. Take the DIV2K dataset as an example. Layout:
 
 ```text
 powervqe/
@@ -503,7 +503,7 @@ Example config files are presented in `mmediting/configs/` for some approaches a
 - [DnCNN (TIP 2017)](https://arxiv.org/abs/1608.03981)
 - [AR-CNN (ICCV 2015)](https://arxiv.org/abs/1504.06993): To improve the performance, the training patch size is changed from 32 to 128.
 
-You can download the pre-trained models at the latest Releases.
+You can download the pre-trained models at the latest [Releases](https://github.com/ryanxingql/powervqe/releases/).
 
 Note that for simplicity, we first train the `QP=37` and `QF=50` models, and then fine-tune them to get other models.
 

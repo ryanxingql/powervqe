@@ -2,6 +2,9 @@ import torch
 from mmcv.runner import load_checkpoint
 from torch import nn
 
+import numpy as np
+import torch.nn.functional as nnf
+
 from mmedit.models.registry import BACKBONES
 from mmedit.utils import get_root_logger
 
@@ -287,6 +290,17 @@ class RDNQE(nn.Module):
             Tensor: Forward results.
         """
 
+        # padding
+        sz_mul = 4
+        h, w = x.shape[2:]
+        diff_h, diff_w = int(np.ceil(h / sz_mul)) * sz_mul - h, int(
+            np.ceil(w / sz_mul)) * sz_mul - w
+        if diff_h != 0 or diff_w != 0:
+            x = nnf.pad(
+                x, (diff_w // 2, diff_w - diff_w // 2, diff_h // 2,
+                    diff_h - diff_h // 2),
+                mode='reflect')
+
         sfe1 = self.sfe1(x)
         sfe2 = self.sfe2(sfe1)
 
@@ -300,6 +314,11 @@ class RDNQE(nn.Module):
         # global residual learning
         x = self.upscale(x)
         x = self.output(x)
+
+        # cropping
+        if diff_h != 0 or diff_w != 0:
+            x = x[..., (diff_h // 2):(diff_h // 2) + h,
+                  (diff_w // 2):(diff_w // 2) + w]
         return x
 
     def init_weights(self, pretrained=None, strict=True):

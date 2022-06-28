@@ -14,4 +14,5 @@ total_iters = 500000
 lr_config = dict(step=[100000, 200000, 300000, 400000])
 
 # runtime settings
+work_dir = f'./work_dirs/{exp_name}'
 load_from = './work_dirs/rdn_div2k_qf50/latest.pth'

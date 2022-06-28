@@ -8,3 +8,6 @@ data = dict(
         dataset=dict(lq_folder='data/div2k/train_lq/qf50', ext_lq='.jpg')),
     val=dict(lq_folder='data/div2k/valid_lq/qf50', ext_lq='.jpg'),
     test=dict(lq_folder='data/div2k/valid_lq/qf50', ext_lq='.jpg'))
+
+# runtime settings
+work_dir = f'./work_dirs/{exp_name}'

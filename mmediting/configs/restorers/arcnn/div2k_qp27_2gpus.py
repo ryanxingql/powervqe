@@ -13,4 +13,5 @@ total_iters = 300000  # not indicated in the paper
 lr_config = dict(periods=[total_iters])
 
 # runtime settings
+work_dir = f'./work_dirs/{exp_name}'
 load_from = './work_dirs/arcnn_div2k_qp37/latest.pth'

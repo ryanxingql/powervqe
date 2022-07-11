@@ -67,14 +67,17 @@ class CBDNet(nn.Module):
                 kernel_size=3,
                 padding=3 // 2),
             nn.ReLU(inplace=True)
-        ] + [
-            nn.Conv2d(
-                in_channels=estimate_channels,
-                out_channels=estimate_channels,
-                kernel_size=3,
-                padding=3 // 2),
-            nn.ReLU(inplace=True),
-        ] * 3 + [
+        ])
+        for _ in range(3):
+            estimate_list += nn.ModuleList([
+                nn.Conv2d(
+                    in_channels=estimate_channels,
+                    out_channels=estimate_channels,
+                    kernel_size=3,
+                    padding=3 // 2),
+                nn.ReLU(inplace=True),
+            ])
+        estimate_list += nn.ModuleList([
             nn.Conv2d(estimate_channels, out_channels, 3, padding=3 // 2),
             nn.ReLU(inplace=True)
         ])

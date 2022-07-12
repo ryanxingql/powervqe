@@ -75,12 +75,12 @@ class STDF(nn.Module):
         # deformable conv
         # notice group=in_nc, i.e., each map use individual offset and mask
         self.deform_conv = ModulatedDeformConv2d(
-            in_nc,
-            out_nc,
-            deform_ks,
+            in_channels=in_nc,
+            out_channels=out_nc,
+            kernel_size=deform_ks,
             padding=deform_ks // 2,
-            deformable_groups=in_nc)
-        self.relu = nn.ReLU()
+            deform_groups=in_nc)
+        self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
         n_off_msk = self.deform_ks * self.deform_ks

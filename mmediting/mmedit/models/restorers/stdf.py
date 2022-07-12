@@ -3,11 +3,9 @@ import numbers
 import os.path as osp
 
 import mmcv
-from mmcv.runner import auto_fp16
 
 from mmedit.core import psnr, ssim, tensor2img
 from .basic_restorer import BasicRestorer
-from ..builder import build_backbone, build_loss
 from ..registry import MODELS
 
 
@@ -36,7 +34,8 @@ class STDF(BasicRestorer):
                  train_cfg=None,
                  test_cfg=None,
                  pretrained=None):
-        super().__init__(generator, pixel_loss, train_cfg, test_cfg, pretrained)
+        super().__init__(generator, pixel_loss, train_cfg, test_cfg,
+                         pretrained)
 
     def forward_test(self,
                      lq,

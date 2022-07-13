@@ -512,18 +512,11 @@ class RBQE(nn.Module):
                  nf_out=3,
                  if_only_last_output=True,
                  comp_type='hevc'):
+
         super().__init__()
 
-        self.nf_in = nf_in
-        self.nf_base = nf_base
         self.nlevel = nlevel
-        self.down_method = down_method
-        self.up_method = up_method
-        self.if_separable = if_separable
-        self.if_eca = if_eca
-        self.nf_out = nf_out
         self.if_only_last_output = if_only_last_output
-        self.comp_type = comp_type
 
         # input conv
         if if_separable:

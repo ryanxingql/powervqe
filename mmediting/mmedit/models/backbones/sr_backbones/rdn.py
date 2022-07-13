@@ -104,10 +104,8 @@ class RDN(nn.Module):
                  channel_growth=64):
 
         super().__init__()
-        self.mid_channels = mid_channels
-        self.channel_growth = channel_growth
+
         self.num_blocks = num_blocks
-        self.num_layers = num_layers
 
         # shallow feature extraction
         self.sfe1 = nn.Conv2d(
@@ -117,22 +115,16 @@ class RDN(nn.Module):
 
         # residual dense blocks
         self.rdbs = nn.ModuleList(
-            [RDB(self.mid_channels, self.channel_growth, self.num_layers)])
+            [RDB(mid_channels, channel_growth, num_layers)])
         for _ in range(self.num_blocks - 1):
-            self.rdbs.append(
-                RDB(self.channel_growth, self.channel_growth, self.num_layers))
+            self.rdbs.append(RDB(channel_growth, channel_growth, num_layers))
 
         # global feature fusion
         self.gff = nn.Sequential(
             nn.Conv2d(
-                self.channel_growth * self.num_blocks,
-                self.mid_channels,
-                kernel_size=1),
+                channel_growth * self.num_blocks, mid_channels, kernel_size=1),
             nn.Conv2d(
-                self.mid_channels,
-                self.mid_channels,
-                kernel_size=3,
-                padding=3 // 2))
+                mid_channels, mid_channels, kernel_size=3, padding=3 // 2))
 
         # up-sampling
         assert 2 <= upscale_factor <= 4
@@ -141,8 +133,8 @@ class RDN(nn.Module):
             for _ in range(upscale_factor // 2):
                 self.upscale.extend([
                     nn.Conv2d(
-                        self.mid_channels,
-                        self.mid_channels * (2**2),
+                        mid_channels,
+                        mid_channels * (2**2),
                         kernel_size=3,
                         padding=3 // 2),
                     nn.PixelShuffle(2)
@@ -151,13 +143,13 @@ class RDN(nn.Module):
         else:
             self.upscale = nn.Sequential(
                 nn.Conv2d(
-                    self.mid_channels,
-                    self.mid_channels * (upscale_factor**2),
+                    mid_channels,
+                    mid_channels * (upscale_factor**2),
                     kernel_size=3,
                     padding=3 // 2), nn.PixelShuffle(upscale_factor))
 
         self.output = nn.Conv2d(
-            self.mid_channels, out_channels, kernel_size=3, padding=3 // 2)
+            mid_channels, out_channels, kernel_size=3, padding=3 // 2)
 
     def forward(self, x):
         """Forward function.

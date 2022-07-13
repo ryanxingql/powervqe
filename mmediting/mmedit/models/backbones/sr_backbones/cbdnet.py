@@ -46,19 +46,8 @@ class CBDNet(nn.Module):
                  down_denoise='avepool2d',
                  up_denoise='transpose2d',
                  reduce_denoise='add'):
-        super().__init__()
 
-        self.in_channels = in_channels
-        self.estimate_channels = estimate_channels
-        self.out_channels = out_channels
-        self.nlevel_denoise = nlevel_denoise
-        self.nf_base_denoise = nf_base_denoise
-        self.nf_gr_denoise = nf_gr_denoise
-        self.nl_base_denoise = nl_base_denoise
-        self.nl_gr_denoise = nl_gr_denoise
-        self.down_denoise = down_denoise
-        self.up_denoise = up_denoise
-        self.reduce_denoise = reduce_denoise
+        super().__init__()
 
         estimate_list = nn.ModuleList([
             nn.Conv2d(

@@ -25,11 +25,8 @@ class DCAD(nn.Module):
                  out_channels,
                  mid_channels=64,
                  num_blocks=8):
-        super().__init__()
 
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.num_blocks = num_blocks
+        super().__init__()
 
         self.conv_first = nn.Conv2d(in_channels, mid_channels, 3, padding=1)
 

@@ -43,17 +43,8 @@ class ARCNN(nn.Module):
                  mid_kernel_size_1=7,
                  mid_kernel_size_2=1,
                  out_kernel_size=5):
-        super().__init__()
 
-        self.in_channels = in_channels
-        self.mid_channels_1 = mid_channels_1
-        self.mid_channels_2 = mid_channels_2
-        self.mid_channels_3 = mid_channels_3
-        self.out_channels = out_channels
-        self.in_kernel_size = in_kernel_size
-        self.mid_kernel_size_1 = mid_kernel_size_1
-        self.mid_kernel_size_2 = mid_kernel_size_2
-        self.out_kernel_size = out_kernel_size
+        super().__init__()
 
         self.network = nn.Sequential(
             nn.Conv2d(

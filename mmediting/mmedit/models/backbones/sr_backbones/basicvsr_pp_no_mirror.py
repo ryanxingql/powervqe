@@ -51,6 +51,7 @@ class BasicVSRPlusPlusNoMirror(nn.Module):
                  cpu_cache_length=100):
 
         super().__init__()
+
         self.mid_channels = mid_channels
         self.is_low_res_input = is_low_res_input
         self.cpu_cache_length = cpu_cache_length

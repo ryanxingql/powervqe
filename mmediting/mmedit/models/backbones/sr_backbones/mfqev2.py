@@ -28,18 +28,13 @@ class MFQEv2(nn.Module):
             Default: 32.
     """
 
-    def __init__(
-        self,
-        in_channels=3,
-        out_channels=3,
-        nf=32,
-        spynet_pretrained=None,
-    ):
-        super().__init__()
+    def __init__(self,
+                 in_channels=3,
+                 out_channels=3,
+                 nf=32,
+                 spynet_pretrained=None):
 
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.nf = nf
+        super().__init__()
 
         # for frame alignment
         self.spynet = SPyNet(pretrained=spynet_pretrained)
@@ -162,18 +157,11 @@ class MFQEv2(nn.Module):
         ks7_feat_center_frm = self.ks7_conv_list[1](center_frm)
         ks7_feat_right_pqf = self.ks7_conv_list[2](aligned_right_pqf)
 
-        feat_ = torch.cat((
-            ks3_feat_left_pqf,
-            ks3_feat_center_frm,
-            ks3_feat_right_pqf,
-            ks5_feat_left_pqf,
-            ks5_feat_center_frm,
-            ks5_feat_right_pqf,
-            ks7_feat_left_pqf,
-            ks7_feat_center_frm,
-            ks7_feat_right_pqf,
-        ),
-                          dim=1)  # n c=9* h w
+        feat_ = torch.cat(
+            (ks3_feat_left_pqf, ks3_feat_center_frm, ks3_feat_right_pqf,
+             ks5_feat_left_pqf, ks5_feat_center_frm, ks5_feat_right_pqf,
+             ks7_feat_left_pqf, ks7_feat_center_frm, ks7_feat_right_pqf),
+            dim=1)  # n c=9* h w
 
         # image reconstruction
         out_list = list()

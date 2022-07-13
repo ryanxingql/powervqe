@@ -27,8 +27,6 @@ class STDF(nn.Module):
         super(STDF, self).__init__()
 
         self.in_nc = in_nc
-        self.out_nc = out_nc
-        self.nf = nf
         self.nb = nb
         self.deform_ks = deform_ks
 
@@ -37,32 +35,44 @@ class STDF(nn.Module):
         # u-shape backbone
         self.in_conv = nn.Sequential(
             nn.Conv2d(in_nc, nf, base_ks, padding=base_ks // 2),
-            nn.ReLU(inplace=True))
+            nn.ReLU(inplace=True),
+        )
+
         for i in range(1, nb):
             setattr(
-                self, 'dn_conv{}'.format(i),
+                self,
+                'dn_conv{}'.format(i),
                 nn.Sequential(
                     nn.Conv2d(nf, nf, base_ks, stride=2, padding=base_ks // 2),
                     nn.ReLU(inplace=True),
                     nn.Conv2d(nf, nf, base_ks, padding=base_ks // 2),
-                    nn.ReLU(inplace=True)))
+                    nn.ReLU(inplace=True),
+                ),
+            )
             setattr(
-                self, 'up_conv{}'.format(i),
+                self,
+                'up_conv{}'.format(i),
                 nn.Sequential(
                     nn.Conv2d(2 * nf, nf, base_ks, padding=base_ks // 2),
                     nn.ReLU(inplace=True),
                     nn.ConvTranspose2d(nf, nf, 4, stride=2, padding=1),
-                    nn.ReLU(inplace=True)))
+                    nn.ReLU(inplace=True),
+                ),
+            )
+
         self.tr_conv = nn.Sequential(
             nn.Conv2d(nf, nf, base_ks, stride=2, padding=base_ks // 2),
             nn.ReLU(inplace=True),
             nn.Conv2d(nf, nf, base_ks, padding=base_ks // 2),
             nn.ReLU(inplace=True),
             nn.ConvTranspose2d(nf, nf, 4, stride=2, padding=1),
-            nn.ReLU(inplace=True))
+            nn.ReLU(inplace=True),
+        )
+
         self.out_conv = nn.Sequential(
             nn.Conv2d(nf, nf, base_ks, padding=base_ks // 2),
-            nn.ReLU(inplace=True))
+            nn.ReLU(inplace=True),
+        )
 
         # regression head
         # why in_nc*3*size_dk?
@@ -83,8 +93,6 @@ class STDF(nn.Module):
         self.relu = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        n_off_msk = self.deform_ks * self.deform_ks
-
         b, _, _, h, w = x.shape
         x = x.view(b, -1, h, w)
 
@@ -93,8 +101,10 @@ class STDF(nn.Module):
         for i in range(1, self.nb):
             dn_conv = getattr(self, 'dn_conv{}'.format(i))
             out_lst.append(dn_conv(out_lst[i - 1]))
-        # trivial conv
+
+        # first down then up at the bottom
         out = self.tr_conv(out_lst[-1])
+
         # feature reconstruction (with up-sampling)
         for i in range(self.nb - 1, 0, -1):
             up_conv = getattr(self, 'up_conv{}'.format(i))
@@ -104,8 +114,9 @@ class STDF(nn.Module):
         # offset: conv offset
         # mask: confidence
         off_msk = self.offset_mask(self.out_conv(out))
-        off = off_msk[:, :self.in_nc * 2 * n_off_msk, ...]
-        msk = torch.sigmoid(off_msk[:, self.in_nc * 2 * n_off_msk:, ...])
+        nc_off = self.in_nc * 2 * self.size_dk
+        off = off_msk[:, :nc_off, ...]
+        msk = torch.sigmoid(off_msk[:, nc_off:, ...])
 
         # perform deformable convolutional fusion
         fused_feat = self.relu(self.deform_conv(x, off, msk))
@@ -122,21 +133,23 @@ class QENet(nn.Module):
             nb: num of conv layers.
             out_nc: num of output channel. 3 for RGB, 1 for Y.
         """
-        super(QENet, self).__init__()
+        super().__init__()
 
-        self.in_conv = nn.Conv2d(in_nc, nf, base_ks, padding=1)
+        padding = base_ks // 2
+
+        self.in_conv = nn.Conv2d(in_nc, nf, base_ks, padding=padding)
 
         hid_conv_lst = []
         for _ in range(nb):
             hid_conv_lst += [
                 nn.ReLU(inplace=True),
-                nn.Conv2d(nf, nf, base_ks, padding=1),
+                nn.Conv2d(nf, nf, base_ks, padding=padding),
             ]
         self.hid_conv = nn.Sequential(*hid_conv_lst)
 
         self.out_conv = nn.Sequential(
             nn.ReLU(inplace=True),
-            nn.Conv2d(nf, out_nc, base_ks, padding=1),
+            nn.Conv2d(nf, out_nc, base_ks, padding=padding),
         )
 
     def forward(self, x):
@@ -155,7 +168,7 @@ class STDFNet(nn.Module):
     Args:
         in_channels (int): Channel number of inputs.
         out_channels (int): Channel number of outputs.
-        radius: range from the first input frame to the center frame.
+        radius: frames number before the center frame.
         nf_stdf (int): Channel number of intermediate features of STDF module.
             Default: 32.
         nb_stdf (int): Block number of STDF module.
@@ -168,45 +181,35 @@ class STDFNet(nn.Module):
             Default: 3.
     """
 
-    def __init__(
-        self,
-        in_channels=3,
-        out_channels=3,
-        radius=3,
-        nf_stdf=32,
-        nb_stdf=3,
-        nf_stdf_out=64,  # also nf_qe_in
-        deform_ks=3,
-        nf_qe=48,
-        nb_qe=6,
-    ):
+    def __init__(self,
+                 in_channels=3,
+                 out_channels=3,
+                 radius=3,
+                 nf_stdf=32,
+                 nb_stdf=3,
+                 nf_stdf_out=64,
+                 deform_ks=3,
+                 nf_qe=48,
+                 nb_qe=6):
+
         super().__init__()
 
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-
         self.radius = radius
-        assert self.radius % 2 == 1
-        self.input_len = radius * 2 + 1
-
-        self.nf_stdf = nf_stdf
-        self.nb_stdf = nb_stdf
-        self.deform_ks = deform_ks
-        self.nf_stdf_out = nf_stdf_out
 
         self.nf_qe = nf_qe
         self.nb_qe = nb_qe
 
+        input_len = radius * 2 + 1
         self.stdf = STDF(
-            in_nc=in_channels * self.input_len,
-            out_nc=self.nf_stdf_out,
+            in_nc=in_channels * input_len,
+            out_nc=nf_stdf_out,
             nf=nf_stdf,
             nb=nb_stdf,
             deform_ks=deform_ks,
         )
 
         self.qenet = QENet(
-            in_nc=self.nf_stdf_out,
+            in_nc=nf_stdf_out,
             nf=nf_qe,
             nb=nb_qe,
             out_nc=out_channels,
@@ -224,7 +227,7 @@ class STDFNet(nn.Module):
         out = self.stdf(x)
         out = self.qenet(out)
 
-        out += x[:, self.input_len // 2, ...]  # res: add middle frame
+        out += x[:, self.radius, ...]  # res: add middle frame
         return out
 
     def init_weights(self, pretrained=None, strict=True):

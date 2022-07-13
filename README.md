@@ -12,7 +12,7 @@
     - [4.2 MFQEv2 Dataset](#42-mfqev2-dataset)
     - [4.3 Create a Symbolic Link](#43-create-a-symbolic-link)
   - [5. Training](#5-training)
-    - [5.1 Special Cases](#51-special-cases)
+    - [5.1 Special Case for MFQEv2](#51-special-case-for-mfqev2)
   - [6. Test](#6-test)
     - [6.1 Special Cases](#61-special-cases)
     - [6.2 PSNR Calculation](#62-psnr-calculation)
@@ -35,6 +35,13 @@ We also implement some SR baseline models for quality enhancement as follows:
 
 - [BasicVSR++ (CVPR 2022)](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/basicvsr_plusplus/README.md): Winner of the NTIRE 2021 VSR challenge.
 - [EDVR (CVPRW 2019)](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/edvr/README.md): Winner of the NTIRE 2019 VSR challenge.
+
+Furthermore, we incorporate some image-oriented models into PowerVQE, which are detailed in [this section](#73-supports-for-image-datasets):
+
+- [RBQE (ECCV 2020)](https://arxiv.org/abs/2006.16581)
+- [CBDNet (CVPR 2019)](https://arxiv.org/abs/1807.04686)
+- [RDN (CVPR 2018)](https://arxiv.org/abs/1802.08797)
+- [AR-CNN (ICCV 2015)](https://arxiv.org/abs/1504.06993)
 
 ## 2. Performance
 
@@ -95,7 +102,9 @@ Y-PSNR results on the test set (QP=37) of the [MFQEv2 dataset](https://github.co
 
 </details>  
 
-Note: The performance of STDF (trained with RGB data) is slightly worse than that in this [repo](https://github.com/ryanxingql/stdf-pytorch) (trained with Y data).
+For simplicity, all models are trained with RGB data. The Y-PSNR results are obtained from the RGB data.
+
+22-7-13 Note: We are still improving the performance of STDF.
 
 ## 3. Environment
 
@@ -132,7 +141,9 @@ We provide the built FFmpeg 5.0.1 for converting MKV to PNG. You can download it
 
 ```bash
 cd <your-ffmpeg-dir>
+
 # download ffmpeg-release-amd64-static.tar.xz
+
 tar -xvf ffmpeg-release-amd64-static.tar.xz
 ```
 
@@ -158,7 +169,9 @@ chmod +x ./run.sh
 
 # suppose the ffmpeg is located at ldv_v2/../ffmpeg-5.0.1-amd64-static/ffmpeg
 # then you should run:
+# 
 #./run.sh ../
+# 
 ./run.sh <your-ffmpeg-dir>
 ```
 
@@ -203,8 +216,9 @@ cd mmediting/
 
 # suppose your data dir is /mnt/usr/data
 # then you should run:
+# 
 #ln -s /mnt/usr/data ./
-
+# 
 ln -s <your-data-dir> ./
 ```
 
@@ -250,17 +264,19 @@ chmod +x ./tools/dist_train.sh
 # suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py
 # and the gpu number is 4
 # then you should run:
+# 
 #conda activate open-mmlab && \
 #CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
 #./tools/dist_train.sh ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py 4
+# 
 conda activate open-mmlab && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_train.sh <config-path> <gpu-number>
 ```
 
-### 5.1 Special Cases
+### 5.1 Special Case for MFQEv2
 
 To train the MFQEv2 models, you should first train the non-PQF model and then the PQF model:
 
@@ -298,6 +314,7 @@ chmod +x ./tools/dist_test.sh
 # you want to use 4 gpus
 # and you want to save images at ./work_dirs/basicvsrpp_ldv_v2/500k/ldv
 # then you should run:
+# 
 #conda activate open-mmlab && \
 #CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
@@ -306,6 +323,7 @@ chmod +x ./tools/dist_test.sh
 #./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth \
 #4 \
 #--save-path ./work_dirs/basicvsrpp_ldv_v2/500k/ldv_v2
+# 
 conda activate open-mmlab && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29510 \

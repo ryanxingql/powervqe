@@ -19,7 +19,8 @@
   - [7. Q&A](#7-qa)
     - [7.1 Main Differences from the Original Papers](#71-main-differences-from-the-original-papers)
     - [7.2 How to Use the Latest MMEditing](#72-how-to-use-the-latest-mmediting)
-    - [7.3 Supports for Image Datasets](#73-supports-for-image-datasets)
+    - [7.3 Support for Image Datasets](#73-support-for-image-datasets)
+    - [7.4 Support for LMDB](#74-support-for-lmdb)
   - [8. Licenses](#8-licenses)
 
 ## 1. Introduction
@@ -36,7 +37,7 @@ We also implement some SR baseline models for quality enhancement as follows:
 - [BasicVSR++ (CVPR 2022)](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/basicvsr_plusplus/README.md): Winner of the NTIRE 2021 VSR challenge.
 - [EDVR (CVPRW 2019)](https://github.com/open-mmlab/mmediting/blob/master/configs/restorers/edvr/README.md): Winner of the NTIRE 2019 VSR challenge.
 
-Furthermore, we incorporate some image-oriented models into PowerVQE, which are detailed in [this section](#73-supports-for-image-datasets):
+Furthermore, we incorporate some image-oriented models into PowerVQE, which are detailed in [this section](#73-support-for-image-datasets):
 
 - [RBQE (ECCV 2020)](https://arxiv.org/abs/2006.16581)
 - [CBDNet (CVPR 2019)](https://arxiv.org/abs/1807.04686)
@@ -108,23 +109,20 @@ For simplicity, all models are trained with RGB data. The Y-PSNR results are obt
 
 ## 3. Environment
 
-Ubuntu; Four V100 GPUs with 16 GB memory.
+PowerVQE depends on [PyTorch](https://pytorch.org), [MMCV](https://github.com/open-mmlab/mmcv) and some other packages. Here is my code:
 
 ```bash
 git clone https://github.com/ryanxingql/powervqe.git --depth=1
-cd powervqe/
+cd powervqe/mmediting/
 
-conda create -n open-mmlab python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -c pytorch -y && conda activate open-mmlab
-#pip install pip -U
-#pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+conda create -n powervqe python=3.8 pytorch=1.10 cudatoolkit=11.3 torchvision -c pytorch -y && \
+conda activate powervqe
+
 pip3 install openmim && mim install mmcv-full
-
-#git clone https://github.com/open-mmlab/mmediting.git
-cd mmediting/
 pip3 install -e .
 
-pip3 install scipy tqdm
-pip3 install setuptools==59.5.0
+pip3 install scipy tqdm lmdb
+#pip3 install setuptools==59.5.0
 ```
 
 Layout:
@@ -265,12 +263,12 @@ chmod +x ./tools/dist_train.sh
 # and the gpu number is 4
 # then you should run:
 # 
-#conda activate open-mmlab && \
+#conda activate powervqe && \
 #CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
 #./tools/dist_train.sh ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py 4
 # 
-conda activate open-mmlab && \
+conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_train.sh <config-path> <gpu-number>
@@ -284,13 +282,13 @@ To train the MFQEv2 models, you should first train the non-PQF model and then th
 cd mmediting/
 
 # non-PQF
-conda activate open-mmlab && \
+conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_train.sh ./configs/restorers/mfqev2/ldv_v2_non_pqf_4gpus.py 4
 
 # PQF
-conda activate open-mmlab && \
+conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_train.sh ./configs/restorers/mfqev2/ldv_v2_pqf_4gpus.py 4
@@ -315,7 +313,7 @@ chmod +x ./tools/dist_test.sh
 # and you want to save images at ./work_dirs/basicvsrpp_ldv_v2/500k/ldv
 # then you should run:
 # 
-#conda activate open-mmlab && \
+#conda activate powervqe && \
 #CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
 #./tools/dist_test.sh \
@@ -324,7 +322,7 @@ chmod +x ./tools/dist_test.sh
 #4 \
 #--save-path ./work_dirs/basicvsrpp_ldv_v2/500k/ldv_v2
 # 
-conda activate open-mmlab && \
+conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29510 \
 ./tools/dist_test.sh <config-path> <model-path> <gpu-number> \
@@ -338,7 +336,7 @@ To test the MFQEv2 dataset for BasicVSR++, the following commands are necessary,
 ```bash
 cd mmediting/toolbox_test/
 
-conda activate open-mmlab && \
+conda activate powervqe && \
 python test.py -gpu 0 \
 -inp-dir '../data/mfqe_v2/test_lq' \
 -out-dir '../work_dirs/basicvsrpp_ldv_v2/300k/mfqe_v2/' \
@@ -352,7 +350,7 @@ To test each video subfolder for DCAD or DnCNN, the demo pipeline is more recomm
 cd mmediting/toolbox_test/
 
 # test LDVv2 dataset
-conda activate open-mmlab && \
+conda activate powervqe && \
 python test.py -gpu 0 \
 -inp-dir '../data/ldv_v2/test_lq' \
 -out-dir '../work_dirs/dcad_ldv_v2/500k/ldv_v2/' \
@@ -361,7 +359,7 @@ python test.py -gpu 0 \
 -if-img
 
 # test MFQEv2 dataset
-conda activate open-mmlab && \
+conda activate powervqe && \
 python test.py -gpu 0 \
 -inp-dir '../data/mfqe_v2/test_lq' \
 -out-dir '../work_dirs/dcad_ldv_v2/500k/mfqe_v2/' \
@@ -374,7 +372,7 @@ To test the MFQEv2 models, you should test the non-PQF and PQF models separately
 
 ```bash
 # test non-PQFs
-conda activate open-mmlab && \
+conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_test.sh \
@@ -384,7 +382,7 @@ PORT=29500 \
 --save-path ./work_dirs/mfqev2_ldv_v2/ldv_v2
 
 # test PQFs
-conda activate open-mmlab && \
+conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
 ./tools/dist_test.sh \
@@ -403,7 +401,7 @@ cd toolbox_data/
 
 # RGB-PSNR for LDVv2
 
-conda activate open-mmlab && \
+conda activate powervqe && \
 python cal_rgb_psnr.py \
 -gt-dir '../mmediting/data/ldv_v2/test_gt' \
 -enh-dir '../mmediting/work_dirs/dcad_ldv_v2/500k/ldv_v2/' \
@@ -412,7 +410,7 @@ python cal_rgb_psnr.py \
 
 # Y-PSNR for MFQEv2
 
-conda activate open-mmlab && \
+conda activate powervqe && \
 python cal_y_psnr.py \
 -gt-dir '../mmediting/data/mfqe_v2/test_gt' \
 -enh-dir '../mmediting/work_dirs/dcad_ldv_v2/500k/mfqe_v2/' \
@@ -463,7 +461,7 @@ Here are some important files to run our codes. You can simply copy these files 
 - `mmediting/mmedit/apis/restoration_video_inference.py`
 - `mmediting/toolbox_test`
 
-### 7.3 Supports for Image Datasets
+### 7.3 Support for Image Datasets
 
 Prepare your image dataset. Take the DIV2K dataset as an example. Layout:
 
@@ -524,6 +522,52 @@ Example config files are presented in `mmediting/configs/` for some approaches a
 You can download the pre-trained models at the latest [Releases](https://github.com/ryanxingql/powervqe/releases/).
 
 Note that for simplicity, we first train the `QP=37` and `QF=50` models, and then fine-tune them to get other models.
+
+### 7.4 Support for LMDB
+
+We can use LMDB to store our training patches for faster training. Note that there is no need to use LMDB for testing (because testing requires images instead of patches; also, the image number for testing is usually small).
+
+Pros:
+
+- LMDB is fast for IO.
+- We can combine a large number of image patches into a few big LMDB files.
+- Patches are prepared for training.
+  - There is no need to randomly crop the patches during the training.
+  - You can decide how to crop the patches.
+- All images (PNG, JPG, etc.) can be stored as PNG.
+
+Cons:
+
+- We have to prepare the LMDB files with extra time, computation and storage.
+- We have to decide the way of cropping patches (e.g., patch size, cropping stride, etc.) before training.
+- The data pipeline should be modified for LMDB IO.
+
+Take the DIV2K dataset as an example.
+
+```bash
+cd mmediting/
+
+# train
+conda activate powervqe && \
+python tools/data/super-resolution/div2k/preprocess_div2k_dataset_powervqe.py \
+--n-thread 16 \
+--data-root ./data/div2k --data-type train \
+--if-hq \
+--if-lq --lqs qp27 qp32 qp37 qp42 qf20 qf30 qf40 qf50 \
+--extract-patches --crop-size 128 --step 64 \
+--make-lmdb
+
+# valid
+conda activate powervqe && \
+python tools/data/super-resolution/div2k/preprocess_div2k_dataset_powervqe.py \
+--n-thread 16 \
+--data-root ./data/div2k --data-type valid \
+--if-hq \
+--if-lq --lqs qp27 qp32 qp37 qp42 qf20 qf30 qf40 qf50 \
+--make-lmdb
+```
+
+After preparing the LMDB files, you should change the data path and pipeline in your config. Please refer to `mmediting/configs/restorers/cbdnet/` for examples.
 
 ## 8. Licenses
 

@@ -57,7 +57,9 @@ class SRFolderDataset(BaseSRDataset):
                  test_mode=False,
                  filename_tmpl='{}',
                  ext_lq=None):
+
         super().__init__(pipeline, scale, test_mode)
+
         self.lq_folder = str(lq_folder)
         self.gt_folder = str(gt_folder)
         self.filename_tmpl = filename_tmpl
@@ -73,6 +75,7 @@ class SRFolderDataset(BaseSRDataset):
         Returns:
             list[dict]: A list of dicts for paired paths of LQ and GT.
         """
+
         data_infos = []
         lq_paths = self.scan_folder(self.lq_folder)
         gt_paths = self.scan_folder(self.gt_folder)

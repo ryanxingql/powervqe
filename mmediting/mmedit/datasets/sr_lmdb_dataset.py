@@ -61,7 +61,9 @@ class SRLmdbDataset(BaseSRDataset):
     """
 
     def __init__(self, lq_folder, gt_folder, pipeline, scale, test_mode=False):
+
         super().__init__(pipeline, scale, test_mode)
+
         self.lq_folder = str(lq_folder)
         self.gt_folder = str(gt_folder)
         self.scale = scale
@@ -83,6 +85,7 @@ class SRLmdbDataset(BaseSRDataset):
         Returns:
             list[dict]: A list of dicts for paired paths of LQ and GT.
         """
+
         data_infos = []
         # read keys from meta_info.txt in the gt folder
         # lq and gt keys are the same, ensured by the creation process

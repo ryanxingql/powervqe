@@ -28,7 +28,7 @@
 We implement some widely-used quality enhancement approaches for compressed videos based on the powerful [MMEditing](https://github.com/open-mmlab/mmediting) project. These approaches are commonly used for comparison in this field are as follows:
 
 - [STDF (AAAI 2020)](https://github.com/ryanxingql/stdf-pytorch): Enhancing compressed videos with feature-wise deformable convolutions, instead of frame-wise motion estimation and compensation.
-- [MFQEv2 (TPAMI 2019)](https://github.com/ryanxingql/mfqev2.0): Enhancing frames in compressed videos taking advantage of neighboring good-quality frames.
+- [MFQEv2 (TPAMI 2019)](https://github.com/ryanxingql/mfqev2.0): Enhancing frames in compressed videos by taking advantage of neighboring good-quality frames.
 - [DCAD (DCC 2017)](https://ieeexplore.ieee.org/abstract/document/7923714/): The first approach to post-process the decoded videos with a deep-learning-based method. It also sets up good experimental settings.
 - [DnCNN (TIP 2017)](https://arxiv.org/abs/1608.03981): Widely used approach for decompression and denoising.
 
@@ -525,21 +525,21 @@ Note that for simplicity, we first train the `QP=37` and `QF=50` models, and the
 
 ### 7.4 Support for LMDB
 
-We can use LMDB to store our training patches for faster training. Note that there is no need to use LMDB for testing (because testing requires images instead of patches; also, the image number for testing is usually small).
+We can use LMDB to accerlate the IO. Specifically, we can store training patches and test images (optional) into LMDB files.
 
 Pros:
 
-- LMDB is fast for IO.
+- Fast IO speed.
 - We can combine a large number of image patches into a few big LMDB files.
 - Patches are prepared for training.
   - There is no need to randomly crop the patches during the training.
-  - You can decide how to crop the patches.
+  - You can decide how to crop the patches (e.g., frames, patch size, cropping stride, etc.).
 - All images (PNG, JPG, etc.) can be stored as PNG.
 
 Cons:
 
 - We have to prepare the LMDB files with extra time, computation and storage.
-- We have to decide the way of cropping patches (e.g., patch size, cropping stride, etc.) before training.
+- We have to decide the way of cropping patches (e.g., frames, patch size, cropping stride, etc.) before training.
 - The data pipeline should be modified for LMDB IO.
 
 Take the DIV2K dataset as an example.

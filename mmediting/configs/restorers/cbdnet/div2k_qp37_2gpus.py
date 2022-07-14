@@ -29,8 +29,7 @@ train_pipeline = [
         type='LoadImageFromFile',
         io_backend='disk',
         key='lq',
-        flag='unchanged'
-    ),  # keep the color type. ref: https://mmcv.readthedocs.io/en/latest/api.html#mmcv.image.imread
+        flag='unchanged'),
     dict(
         type='LoadImageFromFile',
         io_backend='disk',
@@ -76,8 +75,7 @@ test_pipeline = [
 
 data = dict(
     workers_per_gpu=8,
-    train_dataloader=dict(samples_per_gpu=16,
-                          drop_last=True),  # here we use 32
+    train_dataloader=dict(samples_per_gpu=16, drop_last=True),  # 32 in total
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
@@ -104,15 +102,10 @@ data = dict(
 
 # optimizer
 lr_main = 1e-4
-optimizers = dict(
-    generator=dict(
-        type='Adam',
-        lr=lr_main,
-        #paramwise_cfg=dict(
-        #    custom_keys={'conv_after_body': dict(lr_mult=0.1)},
-        #    bias_lr_mult=0.1,
-        #)
-    ))
+optimizers = dict(generator=dict(
+    type='Adam',
+    lr=lr_main,
+))
 
 # learning policy
 total_iters = 500000

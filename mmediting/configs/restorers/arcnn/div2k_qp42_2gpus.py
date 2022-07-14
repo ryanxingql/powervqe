@@ -9,7 +9,7 @@ data = dict(
     test=dict(lq_folder='data/div2k/valid_lq/qp42'))
 
 # learning policy
-total_iters = 300000  # not indicated in the paper
+total_iters = 300000
 lr_config = dict(periods=[total_iters])
 
 # runtime settings

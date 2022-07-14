@@ -16,6 +16,7 @@ model = dict(
         nb_qe=6,
     ),
     pixel_loss=dict(type='CharbonnierLoss', loss_weight=1.0, reduction='mean'))
+
 # model training and testing settings
 train_cfg = None
 test_cfg = dict(metrics=['PSNR'], crop_border=0)
@@ -101,8 +102,7 @@ val_dataset_type = 'SRLDVDataset'
 
 data = dict(
     workers_per_gpu=8,
-    train_dataloader=dict(samples_per_gpu=8,
-                          drop_last=True),  # 32 patches in total
+    train_dataloader=dict(samples_per_gpu=8, drop_last=True),  # 32 in total
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(

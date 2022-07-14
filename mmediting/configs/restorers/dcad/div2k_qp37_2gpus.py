@@ -11,6 +11,7 @@ model = dict(
         num_blocks=8,
     ),
     pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'))
+
 # model training and testing settings
 train_cfg = None
 test_cfg = dict(metrics=['PSNR'], crop_border=0)
@@ -23,8 +24,7 @@ train_pipeline = [
         type='LoadImageFromFile',
         io_backend='disk',
         key='lq',
-        flag='unchanged'
-    ),  # keep the color type. ref: https://mmcv.readthedocs.io/en/latest/api.html#mmcv.image.imread
+        flag='unchanged'),
     dict(
         type='LoadImageFromFile',
         io_backend='disk',
@@ -37,7 +37,7 @@ train_pipeline = [
         mean=[0, 0, 0],
         std=[1, 1, 1],
         to_rgb=True),
-    dict(type='PairedRandomCrop', gt_patch_size=128),  # 38 in the paper
+    dict(type='PairedRandomCrop', gt_patch_size=128),
     dict(
         type='Flip', keys=['lq', 'gt'], flip_ratio=0.5,
         direction='horizontal'),
@@ -70,9 +70,7 @@ test_pipeline = [
 
 data = dict(
     workers_per_gpu=8,
-    train_dataloader=dict(
-        samples_per_gpu=8, drop_last=True
-    ),  # not indicated in the paper; assumed to be 16 in total
+    train_dataloader=dict(samples_per_gpu=8, drop_last=True),  # 16 in total
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
@@ -98,25 +96,20 @@ data = dict(
         scale=1))
 
 # optimizer
-lr_main = 1e-4  # 1 in the paper
-optimizers = dict(
-    generator=dict(
-        type='Adam',
-        lr=lr_main,
-        #paramwise_cfg=dict(
-        #    custom_keys={'conv_after_body': dict(lr_mult=0.1)},
-        #    bias_lr_mult=0.1,
-        #)
-    ))
+lr_main = 1e-4
+optimizers = dict(generator=dict(
+    type='Adam',
+    lr=lr_main,
+))
 
 # learning policy
-total_iters = 500000  # not indicated in the paper
+total_iters = 500000
 lr_config = dict(
     policy='CosineRestart',
     by_epoch=False,
     periods=[total_iters],
     restart_weights=[1],
-    min_lr=lr_main / 1e3)  # not indicated in the paper
+    min_lr=lr_main / 1e3)
 
 checkpoint_config = dict(interval=5000, save_optimizer=True, by_epoch=False)
 evaluation = dict(interval=5000, save_image=False, gpu_collect=True)

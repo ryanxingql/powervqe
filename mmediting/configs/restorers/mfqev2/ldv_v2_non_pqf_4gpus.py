@@ -12,6 +12,7 @@ model = dict(
         'basicvsr/spynet_20210409-c6c1bd09.pth',
     ),
     pixel_loss=dict(type='CharbonnierLoss', loss_weight=1.0, reduction='mean'))
+
 # model training and testing settings
 total_iters = 600000
 train_cfg = dict(fix_spynet_iter=total_iters // 10)
@@ -100,8 +101,7 @@ val_dataset_type = 'LDPNonPQFDataset'
 
 data = dict(
     workers_per_gpu=8,
-    train_dataloader=dict(samples_per_gpu=32,
-                          drop_last=True),  # 128 patches in total
+    train_dataloader=dict(samples_per_gpu=32, drop_last=True),  # 128 in total
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(

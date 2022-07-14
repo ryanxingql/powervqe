@@ -12,10 +12,8 @@ model = dict(
         mid_channels=64,
         num_blocks=15,
         if_bn=True),
-    pixel_loss=dict(
-        type='MSELoss', loss_weight=1.,
-        reduction='mean')  # loss_weight = .5 in the paper; see form. (1)
-)
+    pixel_loss=dict(type='MSELoss', loss_weight=1., reduction='mean'))
+
 # model training and testing settings
 train_cfg = None
 test_cfg = dict(metrics=['PSNR'], crop_border=0)
@@ -29,8 +27,7 @@ train_pipeline = [
         type='LoadImageFromFile',
         io_backend='disk',
         key='lq',
-        flag='unchanged'
-    ),  # keep the color type. ref: https://mmcv.readthedocs.io/en/latest/api.html#mmcv.image.imread
+        flag='unchanged'),
     dict(
         type='LoadImageFromFile',
         io_backend='disk',
@@ -76,9 +73,7 @@ test_pipeline = [
 
 data = dict(
     workers_per_gpu=8,
-    train_dataloader=dict(
-        samples_per_gpu=16,
-        drop_last=True),  # batch size = 128 in the paper; here we use 32
+    train_dataloader=dict(samples_per_gpu=16, drop_last=True),  # 32 in total
     val_dataloader=dict(samples_per_gpu=1),
     test_dataloader=dict(samples_per_gpu=1),
     train=dict(
@@ -105,23 +100,17 @@ data = dict(
 
 # optimizer
 lr_main = 1e-4
-optimizers = dict(
-    # generator=dict(
-    #     type='SGD',
-    #     lr=0.1,
-    #     weight_decay=0.0001,
-    #     momentum=0.9,
-    # )  # paper
-    generator=dict(
-        type='Adam',
-        lr=lr_main,
-    ))
+optimizers = dict(generator=dict(
+    type='Adam',
+    lr=lr_main,
+))
 
 # learning policy
 total_iters = 500000
+# paper: exp
 gamma = math.exp(
     math.log(1e-3) /
-    total_iters)  # 1e-1 -> 1e-4: 1e-4 = 1e-1 * gamma^(total_iters)
+    total_iters)  # e.g., 1e-1 -> 1e-4: 1e-4 = 1e-1 * gamma^(total_iters)
 lr_config = dict(policy='Exp', by_epoch=False, gamma=gamma)
 
 checkpoint_config = dict(interval=5000, save_optimizer=True, by_epoch=False)

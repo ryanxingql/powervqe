@@ -13,6 +13,7 @@ model = dict(
         num_layers=8,
         channel_growth=64),
     pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'))
+
 # model training and testing settings
 train_cfg = None
 test_cfg = dict(metrics=['PSNR'], crop_border=0)

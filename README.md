@@ -451,12 +451,11 @@ To simplify the training of MFQEv2,
 
 Here are some important files to run our codes. You can simply copy these files to the latest MMEditing repo.
 
-- `mmediting/configs/restorers/{basicvsr_plusplus,dcad,dncnn,edvr,stdf}/ldv_v2_4gpus.py`
-- `mmediting/configs/restorers/mfqev2/ldv_v2_{non_pqf,pqf}_4gpus.py`
-- `mmediting/mmedit/models/backbones/sr_backbones/{basicvsr_pp_no_mirror,dcad,dncnn,edvr_net,mfqev2,stdf}.py`
-- `mmediting/mmedit/models/restorers/{basicvsr,mfqev2_restorer,stdf}.py`
+- `mmediting/configs/restorers/<your-interested-configs>.py`
+- `mmediting/mmedit/models/backbones/sr_backbones/<your-interested-backbones>.py`
+- `mmediting/mmedit/models/restorers/<your-interested-restorers>.py`
 - `mmediting/mmedit/datasets/pipelines/augmentation.py`
-- `mmediting/mmedit/datasets/{sr_ldv_dataset,ldp_dataset}.py`
+- `mmediting/mmedit/datasets/<your-interested-datasets>.py`
 - `mmediting/demo/restoration_video_demo.py`
 - `mmediting/mmedit/apis/restoration_video_inference.py`
 - `mmediting/toolbox_test`
@@ -533,13 +532,13 @@ Pros:
 - We can combine a large number of image patches into a few big LMDB files.
 - Patches are prepared for training.
   - There is no need to randomly crop the patches during the training.
-  - You can decide how to crop the patches (e.g., frames, patch size, cropping stride, etc.).
+  - We can decide how to crop the patches (e.g., frames, patch size, cropping stride, etc.) in advance of the training.
 - All images (PNG, JPG, etc.) can be stored as PNG.
 
 Cons:
 
 - We have to prepare the LMDB files with extra time, computation and storage.
-- We have to decide the way of cropping patches (e.g., frames, patch size, cropping stride, etc.) before training.
+- Once the LMDB file is generated, the training patches cannot be changed.
 - The data pipeline should be modified for LMDB IO.
 
 Take the DIV2K dataset as an example.

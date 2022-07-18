@@ -17,6 +17,7 @@ model = dict(
         up_denoise='transpose2d',
         reduce_denoise='add'),
     pixel_loss=dict(type='MSELoss', loss_weight=1.0, reduction='mean'))
+
 # model training and testing settings
 train_cfg = None
 test_cfg = dict(metrics=['PSNR'], crop_border=0)

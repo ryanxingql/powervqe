@@ -79,21 +79,6 @@ test_pipeline = [
     dict(type='FramesToTensor', keys=['lq', 'gt'])
 ]
 
-demo_pipeline = [
-    dict(
-        type='GenerateFrameIndicesMFQE',
-        filename_tmpl='f{:03d}',
-    ),
-    dict(
-        type='LoadImageFromFileList',
-        io_backend='disk',
-        key='lq',
-        channel_order='rgb'),
-    dict(type='RescaleToZeroOne', keys=['lq']),
-    dict(type='FramesToTensor', keys=['lq']),
-    dict(type='Collect', keys=['lq'], meta_keys=['lq_path', 'key'])
-]
-
 train_dataset_type = 'LDPPQFDataset'
 val_dataset_type = 'LDPPQFDataset'
 

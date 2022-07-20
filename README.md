@@ -107,6 +107,8 @@ For simplicity, all models are trained with RGB data. The Y-PSNR results are obt
 
 Note: The STDF model in this repo trained on RGB data performs worse than [that](https://github.com/ryanxingql/stdf-pytorch) trained on Y data. I guess the increasing channel number (Y->RGB) also increases the learning difficulty of DCN (which learns offset and mask for each channel separately).
 
+Note (22-7-20): I am training an STDF model over the Y data.
+
 ## 3. Environment
 
 PowerVQE depends on [PyTorch](https://pytorch.org), [MMCV](https://github.com/open-mmlab/mmcv) and some other packages. Here is my code:

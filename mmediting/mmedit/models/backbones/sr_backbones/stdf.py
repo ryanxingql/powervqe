@@ -24,7 +24,7 @@ class STDF(nn.Module):
             nb: num of conv layers.
             deform_ks: size of the deformable kernel.
         """
-        super(STDF, self).__init__()
+        super().__init__()
 
         self.in_nc = in_nc
         self.nb = nb

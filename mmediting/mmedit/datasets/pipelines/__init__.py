@@ -26,7 +26,7 @@ from .crop import (Crop, CropAroundCenter, CropAroundFg, CropAroundUnknown,
                    CropLike, FixedCrop, ModCrop, PairedRandomCrop,
                    RandomResizedCrop)
 from .formating import (Collect, FormatTrimap, GetMaskedImage, ImageToTensor,
-                        ToTensor)
+                        ToTensor, FramesToTensor)
 from .generate_assistant import GenerateCoordinateAndCell, GenerateHeatmap
 from .loading import (GetSpatialDiscountMask, LoadImageFromFile,
                       LoadImageFromFileList, LoadMask, LoadPairedImageFromFile,
@@ -49,6 +49,7 @@ __all__ = [
     'RandomLoadResizeBg',
     'Compose',
     'ImageToTensor',
+    'FramesToTensor',
     'ToTensor',
     'GetMaskedImage',
     'BinarizeImage',

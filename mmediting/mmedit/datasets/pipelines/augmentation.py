@@ -1050,7 +1050,7 @@ class GenerateFrameIndicesMFQE:
 
 @PIPELINES.register_module()
 class GenerateFrameIndicesEDVR:
-    """Generate frame index for REDS datasets. It also performs
+    """Generate frame index for the LDV v2 dataset. It also performs
     temporal augmention with random interval.
 
     Required keys: lq_path, gt_path, key, num_input_frames
@@ -1124,8 +1124,8 @@ class GenerateFrameIndicesEDVR:
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += (f'(interval_list={self.interval_list}, '
-                     f'frames_per_clip={self.frames_per_clip})')
+        # repr_str += (f'(interval_list={self.interval_list}, '
+        #              f'frames_per_clip={self.frames_per_clip})')
         return repr_str
 
 

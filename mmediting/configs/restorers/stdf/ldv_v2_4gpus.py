@@ -111,16 +111,14 @@ data = dict(
         num_input_frames=7,
         pipeline=test_pipeline,
         scale=1,
-        max_need_frms=
-        100,  # test only 100 frames each video; or the val time is so long
+        # test only 100 frames each video to decrease the test time
+        max_need_frms=100,
         test_mode=True,  # turn on max_need_frms
     ),
     test=dict(
         type=val_dataset_type,
-        lq_folder=
-        'data/ldv_v2/test_lq',  # 'data/ldv_v2/test_lq' or 'data/mfqe_v2/test_lq'
-        gt_folder=
-        'data/ldv_v2/test_gt',  # 'data/ldv_v2/test_gt' or 'data/mfqe_v2/test_gt'
+        lq_folder='data/ldv_v2/test_lq',  # 'data/mfqe_v2/test_lq'
+        gt_folder='data/ldv_v2/test_gt',  # 'data/mfqe_v2/test_gt'
         num_input_frames=7,
         pipeline=test_pipeline,
         scale=1,

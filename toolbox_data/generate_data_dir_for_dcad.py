@@ -1,9 +1,9 @@
+import argparse
 import os
 import os.path as osp
-from glob import glob
-import shutil
 import random
-import argparse
+import shutil
+from glob import glob
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-src-dir', default='../mmediting/data/ldv_v2')
@@ -16,8 +16,10 @@ assert osp.exists(args.src_dir)
 src_dir_gt = osp.join(args.src_dir, f'{args.label}_gt')
 src_dir_lq = osp.join(args.src_dir, f'{args.label}_lq')
 
-tar_dir_gt = osp.join(args.src_dir, f'{args.label}_gt_{args.nfrms}_frms_max_per_vid')
-tar_dir_lq = osp.join(args.src_dir, f'{args.label}_lq_{args.nfrms}_frms_max_per_vid')
+tar_dir_gt = osp.join(args.src_dir,
+                      f'{args.label}_gt_{args.nfrms}_frms_max_per_vid')
+tar_dir_lq = osp.join(args.src_dir,
+                      f'{args.label}_lq_{args.nfrms}_frms_max_per_vid')
 os.mkdir(tar_dir_gt)
 os.mkdir(tar_dir_lq)
 

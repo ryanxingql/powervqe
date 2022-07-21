@@ -514,7 +514,8 @@ class EDVRNetQE(nn.Module):
         self.with_tsa = with_tsa
         act_cfg = dict(type='LeakyReLU', negative_slope=0.1)
 
-        self.ds_mul = 16  # 2 times x2 down-sampling (4x) and 3-level feature extraction (4x)
+        # 2 times x2 down-sampling (4x) and 3-level feature extraction (4x)
+        self.ds_mul = 16
 
         # ryanxingql
         self.conv_ds1 = nn.Conv2d(
@@ -588,7 +589,7 @@ class EDVRNetQE(nn.Module):
         if dh != 0 or dw != 0:
             if_pad = True
             x = nnF.pad(x, (dw // 2, dw - dw // 2, dh // 2, dh - dh // 2),
-                        "reflect")
+                        'reflect')
         # assert h % 4 == 0 and w % 4 == 0, (
         #     'The height and width of inputs should be a multiple of 4, '
         #     f'but got {h} and {w}.')

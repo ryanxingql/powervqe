@@ -5,8 +5,8 @@ import os.path as osp
 import mmcv
 
 from mmedit.core import psnr, ssim, tensor2img
-from .basic_restorer import BasicRestorer
 from ..registry import MODELS
+from .basic_restorer import BasicRestorer
 
 
 @MODELS.register_module()

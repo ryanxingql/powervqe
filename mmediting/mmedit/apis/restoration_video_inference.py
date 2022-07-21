@@ -32,7 +32,7 @@ def remove_duplicated_frames(data):
     # detect
     dup_list = []
     for idx_frm in range(1, nfrms):
-        pre_frm = data[0, idx_frm-1, ...]
+        pre_frm = data[0, idx_frm - 1, ...]
         curr_frm = data[0, idx_frm, ...]
         if np.equal(pre_frm, curr_frm).all():
             dup_list.append(idx_frm)
@@ -49,7 +49,7 @@ def restore_duplicated_frames(data, dup_list):
     accm_idx = 0
     for idx_t in range(out_t):
         if idx_t in dup_list:
-            data_out[:, idx_t, ...] = data_out[:, idx_t-1, ...]
+            data_out[:, idx_t, ...] = data_out[:, idx_t - 1, ...]
         else:
             data_out[:, idx_t, ...] = data[:, accm_idx, ...]
             accm_idx += 1
@@ -67,14 +67,13 @@ def cut_frames(data):
     assert b == 1
     if (w == 1920 and h == 1080 and t > 240) or (w > 1920) or (h > 1080):
         if_cut = True
-
         """
         # 1-D image
         |*|*|*|
-        
+
         # pad on both sides
         |-|*|*|*|-|
-        
+
         # patch
         |-|*|*|
           |*|*|*|
@@ -90,15 +89,22 @@ def cut_frames(data):
         w_gap = w_after_pad - w
         h_gap = h_after_pad - h
 
-        pad_info = (step_w, w_gap-step_w, step_h, h_gap-step_h)
-        print(f'> here we cut the {w}x{h} input frames into patches with the shape {patch_w}x{patch_h}!')
-        data = nnF.pad(input=data.view(t, c, h, w), pad=pad_info, mode='reflect')  # t, c, h_after_pad, w_after_pad
+        pad_info = (step_w, w_gap - step_w, step_h, h_gap - step_h)
+        print(f'Here we cut the {w}x{h} input frames into patches with the '
+              f'shape {patch_w}x{patch_h}!')
+        data = nnF.pad(
+            input=data.view(t, c, h, w), pad=pad_info,
+            mode='reflect')  # t, c, h_after_pad, w_after_pad
 
-        out = torch.zeros((n_w*n_h, t, c, patch_h, patch_w))  # each patch has no relation to others; thus as dim B
+        out = torch.zeros(
+            (n_w * n_h, t, c, patch_h,
+             patch_w))  # each patch has no relation to others; thus as dim B
         for idx_w in range(n_w):
             for idx_h in range(n_h):
                 idx_patch = idx_w * n_h + idx_h
-                out[idx_patch, ...] = data[..., idx_h*step_h:(idx_h*step_h+patch_h), idx_w*step_w:(idx_w*step_w+patch_w)]
+                out[idx_patch,
+                    ...] = data[..., idx_h * step_h:(idx_h * step_h + patch_h),
+                                idx_w * step_w:(idx_w * step_w + patch_w)]
         data = out
         cut_info = (n_w, n_h, h, w)
     else:
@@ -111,12 +117,14 @@ def merge_patches(data, if_cut, cut_info):
     if if_cut:
         n_w, n_h, h, w = cut_info
         _, t, c, patch_h, patch_w = data.shape
-        out = torch.zeros((1, t, c, n_h*step_h, n_w*step_w))
+        out = torch.zeros((1, t, c, n_h * step_h, n_w * step_w))
         for idx_w in range(n_w):
             for idx_h in range(n_h):
                 idx_patch = idx_w * n_h + idx_h
-                center_patch = data[idx_patch, :, :, step_h:step_h*2, step_w:step_w*2]  # center 1/3x1/3
-                out[..., idx_h*step_h:(idx_h+1)*step_h, idx_w*step_w:(idx_w+1)*step_w] = center_patch
+                center_patch = data[idx_patch, :, :, step_h:step_h * 2,
+                                    step_w:step_w * 2]  # center 1/3x1/3
+                out[..., idx_h * step_h:(idx_h + 1) * step_h,
+                    idx_w * step_w:(idx_w + 1) * step_w] = center_patch
         data = out[..., :h, :w]
     return data
 
@@ -131,9 +139,9 @@ def pad_frames(data):
     if h_gap != 0 or w_gap != 0:
         print('> here we pad the input frames!')
 
-    pad_info = (w_gap//2, w_gap-w_gap//2, h_gap//2, h_gap-h_gap//2)
+    pad_info = (w_gap // 2, w_gap - w_gap // 2, h_gap // 2, h_gap - h_gap // 2)
     data = nnF.pad(input=data.view(-1, c, h, w), pad=pad_info, mode='reflect')
-    data = data.view(b, t, c, h+h_gap, w+w_gap)
+    data = data.view(b, t, c, h + h_gap, w + w_gap)
     return data, pad_info
 
 
@@ -150,13 +158,15 @@ def restore_resolution(data, pad_info):
     return data
 
 
-def restoration_video_inference(model,
-                                img_dir,
-                                window_size,
-                                start_idx,
-                                filename_tmpl,
-                                max_seq_len=None,
-                                if_rmd=False,):
+def restoration_video_inference(
+    model,
+    img_dir,
+    window_size,
+    start_idx,
+    filename_tmpl,
+    max_seq_len=None,
+    if_rmd=False,
+):
     """Inference image with the model.
 
     Args:
@@ -234,7 +244,8 @@ def restoration_video_inference(model,
     # remove duplicated frames if indicated
     if if_rmd:
         data, dup_list = remove_duplicated_frames(data)
-        print(f'> {len(dup_list)} duplicated frames are found for video {key}!')
+        print(
+            f'> {len(dup_list)} duplicated frames are found for video {key}!')
 
     # cut frames into patches
     data, if_cut, cut_info = cut_frames(data)
@@ -250,14 +261,16 @@ def restoration_video_inference(model,
         for ib in range(nb):
             if if_cut:
                 print(f'patch: {ib+1} / {nb}')
-                data = data_[ib:ib+1, ...]  # not [ib, ...]; to preserve the 0-th dim
+                data = data_[ib:ib + 1,
+                             ...]  # not [ib, ...]; to preserve the 0-th dim
 
             if window_size > 0:  # sliding window framework
                 data = pad_sequence(data, window_size)
                 result = []
                 for i in range(0, data.size(1) - 2 * (window_size // 2)):
                     data_i = data[:, i:i + window_size].to(device)
-                    result.append(model(lq=data_i, test_mode=True)['output'].cpu())
+                    result.append(
+                        model(lq=data_i, test_mode=True)['output'].cpu())
                 result = torch.stack(result, dim=1)
             else:  # recurrent framework
                 if max_seq_len is None:

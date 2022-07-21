@@ -32,7 +32,8 @@ class MFQEv2Restorer(BasicRestorer):
                          pretrained)
 
         # fix pre-trained networks
-        self.fix_spynet_iter = train_cfg.get('fix_spynet_iter', 0) if train_cfg else 0
+        self.fix_spynet_iter = train_cfg.get('fix_spynet_iter',
+                                             0) if train_cfg else 0
         self.is_weight_fixed = False
 
         # count training steps

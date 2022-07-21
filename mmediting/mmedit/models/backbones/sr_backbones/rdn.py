@@ -1,9 +1,8 @@
+import numpy as np
 import torch
+import torch.nn.functional as nnf
 from mmcv.runner import load_checkpoint
 from torch import nn
-
-import numpy as np
-import torch.nn.functional as nnf
 
 from mmedit.models.registry import BACKBONES
 from mmedit.utils import get_root_logger

@@ -3,10 +3,9 @@ import torch
 import torch.nn as nn
 from mmcv.runner import load_checkpoint
 
-from .unet import UNet
-
 from mmedit.models.registry import BACKBONES
 from mmedit.utils import get_root_logger
+from .unet import UNet
 
 
 @BACKBONES.register_module()
@@ -16,19 +15,24 @@ class CBDNet(nn.Module):
     Args:
         in_channels (int): Channel number of inputs.
             Default: 3.
-        mid_channels_1 (int): Channel number of the first intermediate features.
+        mid_channels_1 (int): Channel number of the first intermediate
+            features.
             Default: 64.
-        mid_channels_2 (int): Channel number of the second intermediate features.
+        mid_channels_2 (int): Channel number of the second intermediate
+            features.
             Default: 32.
-        mid_channels_3 (int): Channel number of the second intermediate features.
+        mid_channels_3 (int): Channel number of the third intermediate
+            features.
             Default: 16.
         out_channels (int): Channel number of outputs.
             Default: 3.
         in_kernel_size (int): Kernel size of the first convolution.
             Default: 9.
-        mid_kernel_size (int): Kernel size of the first intermediate convolution.
+        mid_kernel_size (int): Kernel size of the first intermediate
+            convolution.
             Default: 7.
-        mid_kernel_size (int): Kernel size of the second intermediate convolution.
+        mid_kernel_size (int): Kernel size of the second intermediate
+            convolution.
             Default: 1.
         out_kernel_size (int): Kernel size of the last convolution.
             Default: 5.

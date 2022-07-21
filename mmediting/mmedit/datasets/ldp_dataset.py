@@ -1,11 +1,10 @@
 # Copyright (c) ryanxingql. All rights reserved.
 import os.path as osp
+import random
 from glob import glob
 
 from .base_sr_dataset import BaseSRDataset
 from .registry import DATASETS
-
-import random
 
 
 @DATASETS.register_module()
@@ -83,7 +82,8 @@ class LDPPQFDataset(BaseSRDataset):
                 random.shuffle(frm_list)
                 frm_list = frm_list[:self.max_need_frms]
 
-            # for LDP, pqf is almost like this: I frame (also PQF) NP NP NP PQF NP NP NP PQF NP ...
+            # for LDP, pqf is almost like this:
+            # I frame (also PQF) NP NP NP PQF NP NP NP PQF NP ...
             # gap between two neighboring PQFs are 3
             pqf_list = list(
                 range(self.i_frame_idx, self.i_frame_idx + max_frm_num, 4))
@@ -186,7 +186,8 @@ class LDPNonPQFDataset(BaseSRDataset):
                 random.shuffle(frm_list)
                 frm_list = frm_list[:self.max_need_frms]
 
-            # for LDP, pqf is almost like this: I frame (also PQF) NP NP NP PQF NP NP NP PQF NP ...
+            # for LDP, pqf is almost like this:
+            # I frame (also PQF) NP NP NP PQF NP NP NP PQF NP ...
             # gap between two neighboring PQFs are 3
             pqf_list = list(
                 range(self.i_frame_idx, self.i_frame_idx + max_frm_num, 4))

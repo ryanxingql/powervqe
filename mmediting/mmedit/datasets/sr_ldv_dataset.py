@@ -1,12 +1,10 @@
 # Copyright (c) ryanxingql. All rights reserved.
-import os
 import os.path as osp
+import random
 from glob import glob
 
 from .base_sr_dataset import BaseSRDataset
 from .registry import DATASETS
-
-import random
 
 
 @DATASETS.register_module()

@@ -45,7 +45,8 @@ class Up(nn.Module):
             pad=[
                 diff_w // 2,
                 (diff_w - diff_w // 2),
-                # only pad H and W; left (diff_w//2); right remaining (diff_w - diff_w//2)
+                # only pad H and W; left (diff_w//2);
+                # right remaining (diff_w - diff_w//2)
                 diff_h // 2,
                 (diff_h - diff_h // 2),
             ],

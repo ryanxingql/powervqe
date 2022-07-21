@@ -30,15 +30,17 @@ class BasicVSR(BasicRestorer):
         pretrained (str): Path for pretrained model. Default: None.
     """
 
-    def __init__(self,
-                 generator,
-                 pixel_loss,
-                 ensemble=None,
-                 train_cfg=None,
-                 test_cfg=None,
-                 pretrained=None,
-                 if_accum=False,
-                 accum_mul=1,):
+    def __init__(
+        self,
+        generator,
+        pixel_loss,
+        ensemble=None,
+        train_cfg=None,
+        test_cfg=None,
+        pretrained=None,
+        if_accum=False,
+        accum_mul=1,
+    ):
         super().__init__(generator, pixel_loss, train_cfg, test_cfg,
                          pretrained)
 

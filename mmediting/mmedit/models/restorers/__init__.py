@@ -6,17 +6,16 @@ from .edvr import EDVR
 from .esrgan import ESRGAN
 from .glean import GLEAN
 from .liif import LIIF
+from .mfqev2_restorer import MFQEv2Restorer
 from .real_basicvsr import RealBasicVSR
 from .real_esrgan import RealESRGAN
 from .srgan import SRGAN
+from .stdf import STDF
 from .tdan import TDAN
 from .ttsr import TTSR
 
-from .mfqev2_restorer import MFQEv2Restorer
-from .stdf import STDF
-
 __all__ = [
     'BasicRestorer', 'SRGAN', 'ESRGAN', 'EDVR', 'LIIF', 'BasicVSR', 'TTSR',
-    'GLEAN', 'TDAN', 'DIC', 'RealESRGAN', 'RealBasicVSR',
-    'MFQEv2Restorer', 'STDF'
+    'GLEAN', 'TDAN', 'DIC', 'RealESRGAN', 'RealBasicVSR', 'MFQEv2Restorer',
+    'STDF'
 ]

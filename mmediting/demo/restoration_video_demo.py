@@ -1,19 +1,19 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import argparse
 import os
+import os.path as osp
+from glob import glob
 
 import cv2
 import mmcv
 import numpy as np
 import torch
+from tqdm import tqdm
 
-from mmedit.apis import init_model, restoration_video_inference, restoration_inference
+from mmedit.apis import (init_model, restoration_inference,
+                         restoration_video_inference)
 from mmedit.core import tensor2img
 from mmedit.utils import modify_args
-
-from glob import glob
-import os.path as osp
-from tqdm import tqdm
 
 VIDEO_EXTENSIONS = ('.mp4', '.mov')
 
@@ -48,7 +48,8 @@ def parse_args():
 
     parser.add_argument('--if-rmd', action='store_true')
 
-    parser.add_argument('--if-img', action='store_true', help='Test frame by frame')
+    parser.add_argument(
+        '--if-img', action='store_true', help='Test frame by frame')
     args = parser.parse_args()
     return args
 
@@ -82,10 +83,15 @@ def main():
             mmcv.imwrite(output, save_path)
         pbar.close()
     else:
-        output = restoration_video_inference(model, args.input_dir,
-                                             args.window_size, args.start_idx,
-                                             args.filename_tmpl, args.max_seq_len,
-                                             if_rmd=args.if_rmd,)
+        output = restoration_video_inference(
+            model,
+            args.input_dir,
+            args.window_size,
+            args.start_idx,
+            args.filename_tmpl,
+            args.max_seq_len,
+            if_rmd=args.if_rmd,
+        )
         file_extension = os.path.splitext(args.output_dir)[1]
         if file_extension in VIDEO_EXTENSIONS:  # save as video
             h, w = output.shape[-2:]
@@ -100,7 +106,8 @@ def main():
             for i in range(args.start_idx, args.start_idx + output.size(1)):
                 output_i = output[:, i - args.start_idx, :, :, :]
                 output_i = tensor2img(output_i)
-                save_path_i = f'{args.output_dir}/{args.filename_tmpl.format(i)}'
+                save_path_i = (f'{args.output_dir}'
+                               '/{args.filename_tmpl.format(i)}')
 
                 mmcv.imwrite(output_i, save_path_i)
 

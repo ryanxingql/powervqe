@@ -79,24 +79,25 @@ $ python
 Note:
 
 1. The git commit id will be written to the version number with step d, e.g. 0.6.0+2e7045c. The version will also be saved in trained models.
-It is recommended that you run step d each time you pull some updates from github. If C++/CUDA codes are modified, then this step is compulsory.
+   It is recommended that you run step d each time you pull some updates from github. If C++/CUDA codes are modified, then this step is compulsory.
 
-    > Important: Be sure to remove the `./build` folder if you reinstall mmedit with a different CUDA/PyTorch version.
+   > Important: Be sure to remove the `./build` folder if you reinstall mmedit with a different CUDA/PyTorch version.
 
-    ```
-    pip uninstall mmedit
-    rm -rf ./build
-    find . -name "*.so" | xargs rm
-    ```
+   ```
+   pip uninstall mmedit
+   rm -rf ./build
+   find . -name "*.so" | xargs rm
+   ```
 
 2. Following the above instructions, mmediting is installed on `dev` mode, any local modifications made to the code will take effect without the need to reinstall it (unless you submit some commits and want to update the version number).
 
 3. If you would like to use `opencv-python-headless` instead of `opencv-python`,
-you can install it before installing MMCV.
+   you can install it before installing MMCV.
 
 4. Some models (such as EDVR in restorers) depend on CUDA ops in `mmcv-full` which is listed in `requirements.txt`. Install it with the default command `pip install -r requirements.txt` need to compile CUDA ops locally and it may take up to 10 mins. Another option is to install pre-compiled `mmcv-full`, visit [MMCV github page](https://github.com/open-mmlab/mmcv#install-with-pip) for concrete instructions. Moreover, if the model you intend to use does not depend on CUDA ops, you could also install the lite version of mmcv with `pip install mmcv` in which CUDA ops is excluded.
 
 ### Install with CPU only
+
 The code can be built for CPU only environment (where CUDA isn't available).
 
 Accordingly, install the CPU version of PyTorch and MMCV.
@@ -107,6 +108,7 @@ pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu101/torch1.7
 ```
 
 <!-- In CPU mode you can run the demo/webcam_demo.py for example. -->
+
 However some functionality is gone in this mode:
 
 - Deformable Convolution

@@ -21,6 +21,7 @@
     - [7.2 How to Use the Latest MMEditing](#72-how-to-use-the-latest-mmediting)
     - [7.3 Support for Image Datasets](#73-support-for-image-datasets)
     - [7.4 Support for LMDB](#74-support-for-lmdb)
+    - [7.5 Use Pre-commit Hook to Polish Code](#75-use-pre-commit-hook-to-polish-code)
   - [8. Licenses](#8-licenses)
 
 ## 1. Introduction
@@ -46,7 +47,7 @@ Furthermore, we incorporate some image-oriented models into PowerVQE, which are 
 
 ## 2. Performance
 
-[[TensorBoard]](https://github.com/ryanxingql/powervqe/wiki/TensorBoard) [[Pre-trained models]](https://github.com/ryanxingql/powervqe/releases/)
+[\[TensorBoard\]](https://github.com/ryanxingql/powervqe/wiki/TensorBoard) [\[Pre-trained models\]](https://github.com/ryanxingql/powervqe/releases/)
 
 RGB-PSNR results on the test set of the [LDVv2 dataset](https://arxiv.org/abs/2204.09314) for the NTIRE 2022 video quality enhancement challenge are as follows:
 
@@ -101,7 +102,7 @@ Y-PSNR results on the test set (QP=37) of the [MFQEv2 dataset](https://github.co
 |       | Ave.             |       |        |        |            | 30.392 | 30.790 | 30.812 | 30.873 | 31.061 | 31.146 | 31.493     |
 |       | Delta PSNR       |       |        |        |            |        | 0.398  | 0.420  | 0.481  | 0.669  | 0.754  | 1.101      |
 
-</details>  
+</details>
 
 For simplicity, all models are trained with RGB data. The Y-PSNR results are obtained from the RGB data.
 
@@ -169,9 +170,9 @@ chmod +x ./run.sh
 
 # suppose the ffmpeg is located at ldv_v2/../ffmpeg-5.0.1-amd64-static/ffmpeg
 # then you should run:
-# 
+#
 #./run.sh ../
-# 
+#
 ./run.sh <your-ffmpeg-dir>
 ```
 
@@ -216,9 +217,9 @@ cd mmediting/
 
 # suppose your data dir is /mnt/usr/data
 # then you should run:
-# 
+#
 #ln -s /mnt/usr/data ./
-# 
+#
 ln -s <your-data-dir> ./
 ```
 
@@ -264,12 +265,12 @@ chmod +x ./tools/dist_train.sh
 # suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py
 # and the gpu number is 4
 # then you should run:
-# 
+#
 #conda activate powervqe && \
 #CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
 #./tools/dist_train.sh ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py 4
-# 
+#
 conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
@@ -314,7 +315,7 @@ chmod +x ./tools/dist_test.sh
 # you want to use 4 gpus
 # and you want to save images at ./work_dirs/basicvsrpp_ldv_v2/500k/ldv
 # then you should run:
-# 
+#
 #conda activate powervqe && \
 #CUDA_VISIBLE_DEVICES=0,1,2,3 \
 #PORT=29500 \
@@ -323,7 +324,7 @@ chmod +x ./tools/dist_test.sh
 #./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth \
 #4 \
 #--save-path ./work_dirs/basicvsrpp_ldv_v2/500k/ldv_v2
-# 
+#
 conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29510 \
@@ -333,7 +334,7 @@ PORT=29510 \
 
 ### 6.1 Special Cases
 
-To test the MFQEv2 dataset for BasicVSR++, the following commands are necessary, since the original BasicVSR++ cannot process frames with sizes smaller than 4*64:
+To test the MFQEv2 dataset for BasicVSR++, the following commands are necessary, since the original BasicVSR++ cannot process frames with sizes smaller than 4\*64:
 
 ```bash
 cd mmediting/toolbox_test/
@@ -569,6 +570,12 @@ python tools/data/super-resolution/div2k/preprocess_div2k_dataset_powervqe.py \
 ```
 
 After preparing the LMDB files, you should change the data path and pipeline in your config. Please refer to `mmediting/configs/restorers/cbdnet/` for examples.
+
+### 7.5 Use Pre-commit Hook to Polish Code
+
+1. Install pre-commit hook: `pip install -U pre-commit`
+2. Config pre-commit hook based on `powervqe/.pre-commit-config.yaml`: `cd powervqe && pre-commit install`
+3. Polish code before each commit and PR: `cd powervqe && pre-commit run --all`.
 
 ## 8. Licenses
 

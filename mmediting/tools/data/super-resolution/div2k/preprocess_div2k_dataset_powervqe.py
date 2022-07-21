@@ -2,11 +2,13 @@
 # modified by ryanxingql
 # Typically, there are (1+8)*2 folders to be processed for DIV2K dataset.
 #     train_hq (png) -> train_hq_sub (png) -> train_hq_sub.lmdb (png)
-#     train_lq/qp27 (png) -> train_lq_sub/qp27 (png) -> train_lq_sub_qp27.lmdb (png)
+#     train_lq/qp27 (png) -> train_lq_sub/qp27 (png)
+#       -> train_lq_sub_qp27.lmdb (png)
 #     train_lq/qp32
 #     train_lq/qp37
 #     train_lq/qp42
-#     train_lq/qf20 (jpg) -> train_lq_sub/qf20 (png) -> train_lq_sub_qf20.lmdb (png)
+#     train_lq/qf20 (jpg) -> train_lq_sub/qf20 (png)
+#       -> train_lq_sub_qf20.lmdb (png)
 #     train_lq/qf30
 #     train_lq/qf40
 #     train_lq/qf50
@@ -26,11 +28,11 @@ import os.path as osp
 import sys
 from multiprocessing import Pool
 
-from tqdm import tqdm
 import cv2
 import lmdb
 import mmcv
 import numpy as np
+from tqdm import tqdm
 
 
 def worker(path, opt, extension_save='.png'):

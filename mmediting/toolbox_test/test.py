@@ -1,20 +1,24 @@
 """
 only use one gpu
 """
-import subprocess
 import argparse
-import os.path as osp
 import os
+import os.path as osp
+import subprocess
 from glob import glob
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-gpu', type=int, default=0)
 parser.add_argument('-inp-dir', type=str, default='../data/ldv_v2/test_lq')
-parser.add_argument('-out-dir', type=str, default='../work_dirs/dcad_ldv_v2/500k/ldv_v2/')
+parser.add_argument(
+    '-out-dir', type=str, default='../work_dirs/dcad_ldv_v2/500k/ldv_v2/')
 
-parser.add_argument('-config-path', type=str, default='../configs/restorers/dcad/ldv_v2.py')
-parser.add_argument('-model-path', type=str, default='../work_dirs/dcad_ldv_v2/iter_500000.pth')
+parser.add_argument(
+    '-config-path', type=str, default='../configs/restorers/dcad/ldv_v2.py')
+parser.add_argument(
+    '-model-path',
+    type=str,
+    default='../work_dirs/dcad_ldv_v2/iter_500000.pth')
 
 parser.add_argument('-if-rmd', action='store_true')
 
@@ -22,9 +26,13 @@ parser.add_argument('-if-class', action='store_true')
 parser.add_argument('-vid-class', type=str, default='A')
 
 parser.add_argument('-if-indicate', action='store_true')
-parser.add_argument('-vid-names', nargs='*',)
+parser.add_argument(
+    '-vid-names',
+    nargs='*',
+)
 
-parser.add_argument('-if-img', action='store_true', help='Test image restoration methods')
+parser.add_argument(
+    '-if-img', action='store_true', help='Test image restoration methods')
 args = parser.parse_args()
 
 if not osp.exists(args.out_dir):
@@ -56,9 +64,10 @@ for vid_name in vid_name_list:
         os.mkdir(save_subdir)
 
     print(f'> test: {vid_name}')
-    cmd_ = f'CUDA_VISIBLE_DEVICES={args.gpu}'\
-           f' python ../demo/restoration_video_demo.py {args.config_path} {args.model_path} {vid_subdir} {save_subdir}'\
-           ' --start-idx 1 --filename-tmpl f{:03d}.png'
+    cmd_ = (f'CUDA_VISIBLE_DEVICES={args.gpu}'
+            f' python ../demo/restoration_video_demo.py {args.config_path} '
+            f'{args.model_path} {vid_subdir} {save_subdir}'
+            ' --start-idx 1 --filename-tmpl f{:03d}.png')
     if args.if_rmd:
         cmd_ += ' --if-rmd'
     if args.if_img:

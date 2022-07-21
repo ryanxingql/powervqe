@@ -1,20 +1,20 @@
 # Copyright (c) ryanxingql. All rights reserved.
+import math
+import numbers
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as nnf
 from mmcv.runner import load_checkpoint
-from torch import nn
 
 from mmedit.models.registry import BACKBONES
 from mmedit.utils import get_root_logger
 
-import math
-import torch
-import numbers
-import torch.nn as nn
-import torch.nn.functional as nnf
-
 
 class ECA(nn.Module):
     """Efficient Channel Attention.
-    ref: https://github.com/BangguWu/ECANet/blob/3adf7a99f829ffa2e94a0de1de8a362614d66958/models/eca_module.py#L5
+    ref: https://github.com/BangguWu/ECANet/blob/
+    3adf7a99f829ffa2e94a0de1de8a362614d66958/models/eca_module.py#L5
     """
 
     def __init__(self, k_size=3):
@@ -30,7 +30,8 @@ class ECA(nn.Module):
 
     def forward(self, inp_t):
         logic = self.avg_pool(inp_t)  # B C H W -> B C 1 1
-        # B C 1 1 -> B C 1 -> B 1 C -> conv (just like FC, but ks=3) -> B 1 C -> B C 1 -> B C 1 1
+        # B C 1 1 -> B C 1 -> B 1 C -> conv (just like FC, but ks=3)
+        # -> B 1 C -> B C 1 -> B C 1 1
         logic = self.conv(logic.squeeze(-1).transpose(-1, -2)).transpose(
             -1, -2).unsqueeze(-1)
         logic = self.sigmoid(logic)
@@ -68,11 +69,11 @@ class SeparableConv2d(nn.Module):
 class GaussianSmoothing(nn.Module):
     """
     Apply gaussian smoothing on a
-    1d, 2d or 3d tensor. Filtering is performed seperately for each channel
+    1d, 2d or 3d tensor. Filtering is performed separately for each channel
     in the input using a depthwise convolution.
     Arguments:
-        channels (int, sequence): Number of channels of the input tensors. Output will
-            have this number of channels as well.
+        channels (int, sequence): Number of channels of the input tensors.
+            Output will have this number of channels as well.
         kernel_size (int, sequence): Size of the gaussian kernel.
         sigma (float, sequence): Standard deviation of the gaussian kernel.
         dim (int, optional): The number of dimensions of the data.
@@ -232,7 +233,8 @@ class IQAM:
                               start_w:(start_w + self.patch_sz)]
 
                 sum_patch = torch.sum(torch.abs(patch))
-                if sum_patch == 0:  # will lead to NAN score of blocky smooth patch
+                # will lead to NAN score of blocky smooth patch
+                if sum_patch == 0:
                     num_smooth += 1
                     score_blocky_smooth = score_blocky_smooth + 1.
 
@@ -254,8 +256,8 @@ class IQAM:
                             (torch.mul(moments_patch, moments_patch_blurred) *
                              2. + self.bigc), (moments_patch.pow(2)) +
                             moments_patch_blurred.pow(2) + self.bigc)
-                        score_blurred_textured = score_blurred_textured + 1 - torch.mean(
-                            similarity_matrix.reshape((-1, )))
+                        score_blurred_textured += 1 - torch.mean(
+                            similarity_matrix.reshape((-1)))
 
                     else:
                         num_smooth += 1
@@ -270,8 +272,10 @@ class IQAM:
                         ) / sum_moments - torch.abs(
                             moments_patch[0, 0]) + self.bigc
 
-                        strength_vertical = strength_vertical if strength_vertical <= self.thr_jnd else self.thr_jnd
-                        strength_horizontal = strength_horizontal if strength_horizontal <= self.thr_jnd else self.thr_jnd
+                        if strength_vertical > self.thr_jnd:
+                            strength_vertical = self.thr_jnd
+                        if strength_horizontal > self.thr_jnd:
+                            strength_horizontal = self.thr_jnd
                         score_ = torch.log(1 - (
                             (strength_vertical + strength_horizontal) /
                             2)) / torch.log(1 - self.thr_jnd)
@@ -616,7 +620,8 @@ class RBQE(nn.Module):
             0, 1, ..., (self.nlevel-1): output from the assigned exit.
         """
         if self.if_only_last_output:
-            assert idx_out is None, 'You cannot indicate the exit since the network has only a single exit.'
+            assert idx_out is None, ('You cannot indicate the exit since the '
+                                     'network has only a single exit.')
             idx_out = self.nlevel - 1
 
         feat = self.in_conv_seq(inp_img)
@@ -638,7 +643,8 @@ class RBQE(nn.Module):
                 """
                 To obtain C2,4
                 It is the second upsampling, idx_up == 2
-                It needs C2,1 to C2,3 at feat_level_unet[1][0], feat_level_unet[2][1] and feat_level_unet[3][2]
+                It needs C2,1 to C2,3 at feat_level_unet[1][0],
+                feat_level_unet[2][1] and feat_level_unet[3][2]
                 feat_level_unet now contains 4 lists.
                 """
                 for idx_, feat_level in enumerate(
@@ -664,9 +670,8 @@ class RBQE(nn.Module):
                 if idx_out == -1:
                     out_img_list.append(out_img)
 
-                if (idx_out == -2) and (
-                        idx_unet <
-                    (self.nlevel - 1)):  # if at the last level, no need to IQA
+                # if at the last level, no need to IQA
+                if (idx_out == -2) and (idx_unet < (self.nlevel - 1)):
                     if_out = self.iqam.forward(out_img)
                     if if_out:
                         break

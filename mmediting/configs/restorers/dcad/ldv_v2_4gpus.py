@@ -90,10 +90,9 @@ data = dict(
         scale=1),
     test=dict(
         type=val_dataset_type,
-        lq_folder=
-        'data/ldv_v2/test_lq/001',  # 002, 003, ... 015; recommend demo pipeline, see README
-        gt_folder=
-        'data/ldv_v2/test_gt/001',  # 002, 003, ... 015; recommend demo pipeline, see README
+        # recommend demo pipeline, see README
+        lq_folder='data/ldv_v2/test_lq/001',  # 002, 003, ... 015
+        gt_folder='data/ldv_v2/test_gt/001',  # 002, 003, ... 015
         pipeline=test_pipeline,
         scale=1))
 

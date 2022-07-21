@@ -1,19 +1,20 @@
-from cv2 import cv2
+import argparse
+import json
+import os
+import os.path as osp
 from glob import glob
 from math import log10
+
 import numpy as np
-import os.path as osp
-from tqdm import tqdm
 import pandas as pd
-import argparse
-import os
-import json
+from cv2 import cv2
+from tqdm import tqdm
 
 max_pixel_square = 255 * 255
 
 
 def cal_psnr(original, compressed):
-    mse = np.mean((original - compressed) ** 2)
+    mse = np.mean((original - compressed)**2)
     if mse == 0:
         return np.inf
     psnr = 10 * log10(max_pixel_square / mse)
@@ -24,7 +25,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-gt-dir', default='../mmediting/data/ldv_v2/test_gt')
     parser.add_argument('-enh-dir', default='../mmediting/data/ldv_v2/test_lq')
-    parser.add_argument('-ignored-frms', type=json.loads, default='{"002":[0]}', help='{"002":[0,]} will leads to error!')
+    parser.add_argument('-ignored-frms',
+                        type=json.loads,
+                        default='{"002":[0]}',
+                        help='{"002":[0,]} will leads to error!')
     parser.add_argument('-save-dir', default='log')
     args = parser.parse_args()
 
@@ -39,7 +43,8 @@ def main():
         enh_vid_dir = osp.join(args.enh_dir, vid_name)
 
         img_list = glob(osp.join(gt_vid_dir, '*.png'))
-        img_name_list = sorted([img_path.split('/')[-1] for img_path in img_list])
+        img_name_list = sorted(
+            [img_path.split('/')[-1] for img_path in img_list])
 
         psnr_list = []
         bar_ = tqdm(total=len(img_name_list))
@@ -53,7 +58,7 @@ def main():
             bar_.update(1)
         bar_.close()
 
-        df = pd.DataFrame(dict(psnr=psnr_list,))
+        df = pd.DataFrame(dict(psnr=psnr_list, ))
         csv_path = osp.join(args.save_dir, f'{vid_name}.csv')
         df.to_csv(csv_path)
         print(f'saved to: {csv_path}')
@@ -71,7 +76,8 @@ def main():
             if psnr == np.inf:
                 inf_num += 1
 
-            if (vid_name in args.ignored_frms) and (idx_psnr in args.ignored_frms[vid_name]):
+            if (vid_name in args.ignored_frms) and (
+                    idx_psnr in args.ignored_frms[vid_name]):
                 ignore_num += 1
             else:
                 valid_psnr_list.append(psnr)
@@ -80,10 +86,13 @@ def main():
         ignore_num_list.append(ignore_num)
         ave_psnr_list.append(np.mean(valid_psnr_list))
 
-    df = pd.DataFrame(dict(vid_name=vid_name_list,  # 每个视频的名字
-                           psnr=ave_psnr_list,  # 每个视频的平均 psnr
-                           inf_num=inf_num_list,  # 每个视频 psnr=inf 的帧数
-                           ignore_num=ignore_num_list,))  # 每个视频被忽略计算 psnr 的帧数
+    df = pd.DataFrame(
+        dict(
+            vid_name=vid_name_list,  # 每个视频的名字
+            psnr=ave_psnr_list,  # 每个视频的平均 psnr
+            inf_num=inf_num_list,  # 每个视频 psnr=inf 的帧数
+            ignore_num=ignore_num_list,
+        ))  # 每个视频被忽略计算 psnr 的帧数
     csv_path = osp.join(args.save_dir, 'ave.csv')
     df.to_csv(csv_path)
     print(f'saved to: {csv_path}')

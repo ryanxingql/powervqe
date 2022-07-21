@@ -2,11 +2,11 @@
 import torch
 import torch.nn as nn
 from mmcv.runner import load_checkpoint
-from mmedit.models.registry import BACKBONES
-from mmedit.utils import get_root_logger
 
 from mmedit.models.backbones.sr_backbones.basicvsr_net import SPyNet
 from mmedit.models.common import flow_warp
+from mmedit.models.registry import BACKBONES
+from mmedit.utils import get_root_logger
 
 
 @BACKBONES.register_module()

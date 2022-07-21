@@ -10,6 +10,7 @@ from .dataset_wrappers import RepeatDataset
 from .generation_paired_dataset import GenerationPairedDataset
 from .generation_unpaired_dataset import GenerationUnpairedDataset
 from .img_inpainting_dataset import ImgInpaintingDataset
+from .ldp_dataset import LDPNonPQFDataset, LDPPQFDataset
 from .registry import DATASETS, PIPELINES
 from .sr_annotation_dataset import SRAnnotationDataset
 from .sr_facial_landmark_dataset import SRFacialLandmarkDataset
@@ -18,6 +19,7 @@ from .sr_folder_gt_dataset import SRFolderGTDataset
 from .sr_folder_multiple_gt_dataset import SRFolderMultipleGTDataset
 from .sr_folder_ref_dataset import SRFolderRefDataset
 from .sr_folder_video_dataset import SRFolderVideoDataset
+from .sr_ldv_dataset import SRLDVDataset
 from .sr_lmdb_dataset import SRLmdbDataset
 from .sr_reds_dataset import SRREDSDataset
 from .sr_reds_multiple_gt_dataset import SRREDSMultipleGTDataset
@@ -26,9 +28,6 @@ from .sr_vid4_dataset import SRVid4Dataset
 from .sr_vimeo90k_dataset import SRVimeo90KDataset
 from .sr_vimeo90k_multiple_gt_dataset import SRVimeo90KMultipleGTDataset
 from .vfi_vimeo90k_dataset import VFIVimeo90KDataset
-
-from .ldp_dataset import LDPPQFDataset, LDPNonPQFDataset
-from .sr_ldv_dataset import SRLDVDataset
 
 __all__ = [
     'DATASETS',

@@ -1100,7 +1100,8 @@ class GenerateFrameIndicesEDVR:
             center_frame_idx = np.random.randint(0, last_idx + 1)
             start_frame_idx = center_frame_idx - num_half_frames * interval
             end_frame_idx = center_frame_idx + num_half_frames * interval
-        frame_name = f'{self.filename_tmpl.format(center_frame_idx + self.idx_start_from)}'
+        _frm_idx = center_frame_idx + self.idx_start_from
+        frame_name = f'{self.filename_tmpl.format(_frm_idx)}'
         neighbor_list = list(
             range(
                 center_frame_idx - num_half_frames * interval +

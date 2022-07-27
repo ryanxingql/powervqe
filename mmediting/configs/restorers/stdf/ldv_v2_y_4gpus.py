@@ -115,8 +115,8 @@ data = dict(
     ),
     test=dict(
         type=val_dataset_type,
-        lq_folder='data/ldv_v2/test_lq',  # 'data/mfqe_v2/test_lq'
-        gt_folder='data/ldv_v2/test_gt',  # 'data/mfqe_v2/test_gt'
+        lq_folder='data/mfqe_v2/test_lq',  # 'data/mfqe_v2/test_lq'
+        gt_folder='data/mfqe_v2/test_gt',  # 'data/mfqe_v2/test_gt'
         num_input_frames=7,
         pipeline=test_pipeline,
         scale=1,

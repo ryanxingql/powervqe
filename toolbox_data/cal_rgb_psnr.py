@@ -88,11 +88,11 @@ def main():
 
     df = pd.DataFrame(
         dict(
-            vid_name=vid_name_list,  # 每个视频的名字
-            psnr=ave_psnr_list,  # 每个视频的平均 psnr
-            inf_num=inf_num_list,  # 每个视频 psnr=inf 的帧数
+            vid_name=vid_name_list,
+            psnr=ave_psnr_list,
+            inf_num=inf_num_list,
             ignore_num=ignore_num_list,
-        ))  # 每个视频被忽略计算 psnr 的帧数
+        ))
     csv_path = osp.join(args.save_dir, 'ave.csv')
     df.to_csv(csv_path)
     print(f'saved to: {csv_path}')

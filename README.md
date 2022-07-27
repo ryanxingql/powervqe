@@ -12,10 +12,12 @@
     - [4.2 MFQEv2 Dataset](#42-mfqev2-dataset)
     - [4.3 Create a Symbolic Link](#43-create-a-symbolic-link)
   - [5. Training](#5-training)
-    - [5.1 Special Case for MFQEv2](#51-special-case-for-mfqev2)
+    - [5.1 Special Case of the MFQEv2 models](#51-special-case-of-the-mfqev2-models)
   - [6. Test](#6-test)
-    - [6.1 Special Cases](#61-special-cases)
-    - [6.2 PSNR Calculation](#62-psnr-calculation)
+    - [6.1 Special Case of the MFQEv2 models](#61-special-case-of-the-mfqev2-models)
+    - [6.2 Special Case of BasicVSR++ over the MFQEv2 Dataset](#62-special-case-of-basicvsr-over-the-mfqev2-dataset)
+    - [6.3 Special Cases of DCAD and DnCNN](#63-special-cases-of-dcad-and-dncnn)
+    - [6.4 PSNR Calculation](#64-psnr-calculation)
   - [7. Q&A](#7-qa)
     - [7.1 Main Differences from the Original Papers](#71-main-differences-from-the-original-papers)
     - [7.2 How to Use the Latest MMEditing](#72-how-to-use-the-latest-mmediting)
@@ -81,34 +83,36 @@ Y-PSNR results on the test set (QP=37) of the [MFQEv2 dataset](https://github.co
 <details>
 <summary>[Table Here]</summary>
 
-| Index | Video Name       | Width | Height | Frames | Frame rate | LQ     | DCAD   | DnCNN  | STDF   | MFQEv2 | EDVR   | BasicVSR++ |
-| ----- | ---------------- | ----- | ------ | ------ | ---------- | ------ | ------ | ------ | ------ | ------ | ------ | ---------- |
-| 1     | Kimono           | 1920  | 1080   | 240    | 24         | 33.076 | 33.345 | 33.370 | 33.425 | 33.837 | 33.986 | 34.560     |
-| 2     | Park Scene       | 1920  | 1080   | 240    | 24         | 30.305 | 30.479 | 30.488 | 30.517 | 30.826 | 30.819 | 31.315     |
-| 3     | Cactus           | 1920  | 1080   | 500    | 50         | 31.167 | 31.448 | 31.463 | 31.520 | 31.752 | 31.855 | 32.182     |
-| 4     | BQ Terrace       | 1920  | 1080   | 600    | 60         | 29.962 | 30.330 | 30.332 | 30.352 | 30.443 | 30.488 | 30.730     |
-| 5     | Basketball Drive | 1920  | 1080   | 500    | 50         | 32.066 | 32.408 | 32.436 | 32.480 | 32.689 | 32.827 | 33.247     |
-| 6     | Race Horses      | 832   | 480    | 300    | 30         | 28.838 | 29.154 | 29.176 | 29.174 | 29.398 | 29.403 | 29.761     |
-| 7     | BQ Mall          | 832   | 480    | 600    | 60         | 30.034 | 30.459 | 30.485 | 30.524 | 30.825 | 30.907 | 31.419     |
-| 8     | Party Scene      | 832   | 480    | 500    | 50         | 26.604 | 26.937 | 26.950 | 27.066 | 27.159 | 27.176 | 27.446     |
-| 9     | Basketball Drill | 832   | 480    | 500    | 50         | 30.334 | 30.829 | 30.861 | 30.921 | 31.028 | 31.171 | 31.367     |
-| 10    | Race Horses      | 416   | 240    | 300    | 30         | 28.052 | 28.429 | 28.446 | 28.471 | 28.810 | 28.818 | 29.196     |
-| 11    | BQ Square        | 416   | 240    | 600    | 60         | 27.040 | 27.623 | 27.633 | 27.830 | 27.916 | 27.873 | 28.174     |
-| 12    | Blowing Bubbles  | 416   | 240    | 500    | 50         | 26.556 | 26.868 | 26.882 | 27.023 | 27.166 | 27.159 | 27.521     |
-| 13    | Basketball Pass  | 416   | 240    | 500    | 50         | 29.232 | 29.642 | 29.668 | 29.746 | 30.048 | 30.176 | 30.562     |
-| 14    | Four People      | 1280  | 720    | 600    | 60         | 33.349 | 33.912 | 33.946 | 33.980 | 34.068 | 34.254 | 34.466     |
-| 15    | Johnny           | 1280  | 720    | 600    | 60         | 35.052 | 35.572 | 35.624 | 35.647 | 35.649 | 35.893 | 36.086     |
-| 16    | Kristen And Sara | 1280  | 720    | 600    | 60         | 34.609 | 35.205 | 35.227 | 35.291 | 35.370 | 35.534 | 35.857     |
-|       | Ave.             |       |        |        |            | 30.392 | 30.790 | 30.812 | 30.873 | 31.061 | 31.146 | 31.493     |
-|       | Delta PSNR       |       |        |        |            |        | 0.398  | 0.420  | 0.481  | 0.669  | 0.754  | 1.101      |
+| Index | Video Name       | Width | Height | Frames | Frame rate | LQ     | DCAD   | DnCNN  | STDF   | STDF-Y | MFQEv2 | EDVR   | BasicVSR++ |
+| ----- | ---------------- | ----- | ------ | ------ | ---------- | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ---------- |
+| 1     | Kimono           | 1920  | 1080   | 240    | 24         | 34.397 | 34.661 | 34.686 | 34.737 | 34.908 | 35.149 | 35.299 |            |
+| 2     | Park Scene       | 1920  | 1080   | 240    | 24         | 31.629 | 31.800 | 31.809 | 31.836 | 32.002 | 32.146 | 32.137 |            |
+| 3     | Cactus           | 1920  | 1080   | 500    | 50         | 32.486 | 32.765 | 32.779 | 32.835 | 33.023 | 33.069 | 33.172 |            |
+| 4     | BQ Terrace       | 1920  | 1080   | 600    | 60         | 31.289 | 31.653 | 31.656 | 31.676 | 31.764 | 31.766 | 31.812 |            |
+| 5     | Basketball Drive | 1920  | 1080   | 500    | 50         | 33.382 | 33.723 | 33.751 | 33.796 | 33.929 | 34.004 | 34.143 |            |
+| 6     | Race Horses      | 832   | 480    | 300    | 30         | 30.161 | 30.475 | 30.496 | 30.495 | 30.574 | 30.718 | 30.723 |            |
+| 7     | BQ Mall          | 832   | 480    | 600    | 60         | 31.353 | 31.777 | 31.803 | 31.842 | 32.100 | 32.143 | 32.225 |            |
+| 8     | Party Scene      | 832   | 480    | 500    | 50         | 27.925 | 28.259 | 28.271 | 28.387 | 28.552 | 28.480 | 28.498 |            |
+| 9     | Basketball Drill | 832   | 480    | 500    | 50         | 31.646 | 32.140 | 32.171 | 32.231 | 32.384 | 32.340 | 32.482 |            |
+| 10    | Race Horses      | 416   | 240    | 300    | 30         | 29.375 | 29.750 | 29.767 | 29.792 | 29.941 | 30.130 | 30.138 |            |
+| 11    | BQ Square        | 416   | 240    | 600    | 60         | 28.365 | 28.947 | 28.957 | 29.154 | 29.338 | 29.239 | 29.198 |            |
+| 12    | Blowing Bubbles  | 416   | 240    | 500    | 50         | 27.876 | 28.188 | 28.202 | 28.342 | 28.509 | 28.486 | 28.479 |            |
+| 13    | Basketball Pass  | 416   | 240    | 500    | 50         | 30.551 | 30.960 | 30.986 | 31.065 | 31.299 | 31.367 | 31.496 |            |
+| 14    | Four People      | 1280  | 720    | 600    | 60         | 34.673 | 35.231 | 35.265 | 35.297 | 35.516 | 35.387 | 35.573 |            |
+| 15    | Johnny           | 1280  | 720    | 600    | 60         | 36.412 | 36.917 | 36.960 | 36.983 | 37.210 | 36.990 | 37.228 |            |
+| 16    | Kristen And Sara | 1280  | 720    | 600    | 60         | 35.949 | 36.530 | 36.553 | 36.620 | 36.875 | 36.695 | 36.864 |            |
+|       | Ave.             |       |        |        |            | 31.717 | 32.111 | 32.132 | 32.193 | 32.370 | 32.382 | 32.467 |            |
+|       | Delta PSNR       |       |        |        |            |        | 0.394  | 0.415  | 0.476  | 0.653  | 0.665  | 0.750  |            |
 
 </details>
 
-For simplicity, all models are trained with RGB data. The Y-PSNR results are obtained from the RGB data.
+Note:
 
-Note: The STDF model in this repo trained on RGB data performs worse than [that](https://github.com/ryanxingql/stdf-pytorch) trained on Y data. I guess the increasing channel number (Y->RGB) also increases the learning difficulty of DCN (which learns offset and mask for each channel separately).
+1. For simplicity, all models except for the STDF-Y model are trained with RGB data. The Y-PSNR results are obtained from the RGB data.
 
-Note (22-7-20): I am training an STDF model over the Y data.
+2. The STDF model trained on RGB data performs worse than the STDF-Y model. I guess the increasing channel number (Y->RGB) also increases the learning difficulty of DCN (which learns offset and mask for each channel separately).
+
+3. (22-07-28) I am waiting for a 32GB-memory GPU to test BasicVSR++ over the MFQEv2 dataset.
 
 ## 3. Environment
 
@@ -277,7 +281,7 @@ PORT=29500 \
 ./tools/dist_train.sh <config-path> <gpu-number>
 ```
 
-### 5.1 Special Case for MFQEv2
+### 5.1 Special Case of the MFQEv2 models
 
 To train the MFQEv2 models, you should first train the non-PQF model and then the PQF model:
 
@@ -310,10 +314,13 @@ cd mmediting/
 
 chmod +x ./tools/dist_test.sh
 
-# suppose your config file is located at ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py
-# your pre-trained model is located at ./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth
+# suppose:
+# your config file is located at:
+# ./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py
+# your pre-trained model is located at:
+# ./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth
 # you want to use 4 gpus
-# and you want to save images at ./work_dirs/basicvsrpp_ldv_v2/500k/ldv
+# you want to save images at ./data/enhanced/basicvsrpp_ldv_v2/500k/ldv
 # then you should run:
 #
 #conda activate powervqe && \
@@ -323,58 +330,24 @@ chmod +x ./tools/dist_test.sh
 #./configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py \
 #./work_dirs/basicvsrpp_ldv_v2/iter_500000.pth \
 #4 \
-#--save-path ./work_dirs/basicvsrpp_ldv_v2/500k/ldv_v2
+#--save-path ./data/enhanced/basicvsrpp_ldv_v2/500k/ldv_v2
 #
 conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29510 \
-./tools/dist_test.sh <config-path> <model-path> <gpu-number> \
+./tools/dist_test.sh \
+<config-path> \
+<model-path> \
+<gpu-number> \
 --save-path <img-save-path>
 ```
 
-### 6.1 Special Cases
+### 6.1 Special Case of the MFQEv2 models
 
-To test the MFQEv2 dataset for BasicVSR++, the following commands are necessary, since the original BasicVSR++ cannot process frames with sizes smaller than 4\*64:
-
-```bash
-cd mmediting/toolbox_test/
-
-conda activate powervqe && \
-python test.py -gpu 0 \
--inp-dir '../data/mfqe_v2/test_lq' \
--out-dir '../work_dirs/basicvsrpp_ldv_v2/300k/mfqe_v2/' \
--config-path '../configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py' \
--model-path '../work_dirs/basicvsrpp_ldv_v2/iter_300000.pth'
-```
-
-To test each video subfolder for DCAD or DnCNN, the demo pipeline is more recommended than the test pipeline:
+To test the MFQEv2 models, you should test the non-PQF and PQF models separately and save the enhanced frames to the same dir. Take testing over the LDVv2 dataset as an example:
 
 ```bash
-cd mmediting/toolbox_test/
-
-# test LDVv2 dataset
-conda activate powervqe && \
-python test.py -gpu 0 \
--inp-dir '../data/ldv_v2/test_lq' \
--out-dir '../work_dirs/dcad_ldv_v2/500k/ldv_v2/' \
--config-path '../configs/restorers/dcad/ldv_v2_4gpus.py' \
--model-path '../work_dirs/dcad_ldv_v2/iter_500000.pth' \
--if-img
-
-# test MFQEv2 dataset
-conda activate powervqe && \
-python test.py -gpu 0 \
--inp-dir '../data/mfqe_v2/test_lq' \
--out-dir '../work_dirs/dcad_ldv_v2/500k/mfqe_v2/' \
--config-path '../configs/restorers/dcad/ldv_v2_4gpus.py' \
--model-path '../work_dirs/dcad_ldv_v2/iter_500000.pth' \
--if-img
-```
-
-To test the MFQEv2 models, you should test the non-PQF and PQF models separately and save the enhanced frames to the same dir.
-
-```bash
-# test non-PQFs
+# test non-PQFs over the LDVv2 dataset
 conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
@@ -382,9 +355,9 @@ PORT=29500 \
 ./configs/restorers/mfqev2/ldv_v2_non_pqf_4gpus.py \
 ./work_dirs/mfqev2_ldv_v2_non_pqf/iter_600000.pth \
 4 \
---save-path ./work_dirs/mfqev2_ldv_v2/ldv_v2
+--save-path ./data/enhanced/mfqev2_ldv_v2/600k/ldv_v2
 
-# test PQFs
+# test PQFs over the LDVv2 dataset
 conda activate powervqe && \
 CUDA_VISIBLE_DEVICES=0,1,2,3 \
 PORT=29500 \
@@ -392,36 +365,88 @@ PORT=29500 \
 ./configs/restorers/mfqev2/ldv_v2_pqf_4gpus.py \
 ./work_dirs/mfqev2_ldv_v2_pqf/iter_600000.pth \
 4 \
---save-path ./work_dirs/mfqev2_ldv_v2/ldv_v2
+--save-path ./data/enhanced/mfqev2_ldv_v2/600k/ldv_v2
 ```
 
-### 6.2 PSNR Calculation
+### 6.2 Special Case of BasicVSR++ over the MFQEv2 Dataset
+
+To test over the MFQEv2 dataset for BasicVSR++, a 32GB-memory GPU is needed. Besides, we use the following script:
+
+```bash
+cd mmediting/toolbox_test/
+
+conda activate powervqe && \
+python test.py -gpu 0 \
+-inp-dir '../data/mfqe_v2/test_lq' \
+-out-dir '../data/enhanced/basicvsrpp_ldv_v2/300k/mfqe_v2/' \
+-config-path '../configs/restorers/basicvsr_plusplus/ldv_v2_4gpus.py' \
+-model-path '../work_dirs/basicvsrpp_ldv_v2/iter_300000.pth'
+```
+
+### 6.3 Special Cases of DCAD and DnCNN
+
+To test each video subfolder for DCAD or DnCNN, the demo pipeline is more recommended than the test pipeline. Take DCAD as an example:
+
+```bash
+cd mmediting/toolbox_test/
+
+# test over the LDVv2 dataset
+conda activate powervqe && \
+python test.py -gpu 0 \
+-inp-dir '../data/ldv_v2/test_lq' \
+-out-dir '../data/enhanced/dcad_ldv_v2/500k/ldv_v2/' \
+-config-path '../configs/restorers/dcad/ldv_v2_4gpus.py' \
+-model-path '../work_dirs/dcad_ldv_v2/iter_500000.pth' \
+-if-img
+
+# test over the MFQEv2 dataset
+conda activate powervqe && \
+python test.py -gpu 0 \
+-inp-dir '../data/mfqe_v2/test_lq' \
+-out-dir '../data/enhanced/dcad_ldv_v2/500k/mfqe_v2/' \
+-config-path '../configs/restorers/dcad/ldv_v2_4gpus.py' \
+-model-path '../work_dirs/dcad_ldv_v2/iter_500000.pth' \
+-if-img
+```
+
+### 6.4 PSNR Calculation
 
 Finally, we can get the PSNR results. Take DCAD as an example:
 
 ```bash
 cd toolbox_data/
 
-# RGB-PSNR for LDVv2
+# RGB-PSNR over the LDVv2 dataset
 
 conda activate powervqe && \
 python cal_rgb_psnr.py \
 -gt-dir '../mmediting/data/ldv_v2/test_gt' \
--enh-dir '../mmediting/work_dirs/dcad_ldv_v2/500k/ldv_v2/' \
+-enh-dir '../mmediting/data/enhanced/dcad_ldv_v2/500k/ldv_v2' \
 -ignored-frms '{"002":[0]}' \
--save-dir './log/dcad_ldv_v2/500k/ldv_v2/'
+-save-dir './log/dcad_ldv_v2/500k/ldv_v2'
 
-# Y-PSNR for MFQEv2
+# Y-PSNR over the MFQEv2 dataset
 
 conda activate powervqe && \
 python cal_y_psnr.py \
 -gt-dir '../mmediting/data/mfqe_v2/test_gt' \
--enh-dir '../mmediting/work_dirs/dcad_ldv_v2/500k/mfqe_v2/' \
--save-dir './log/dcad_ldv_v2/500k/mfqe_v2/' \
+-enh-dir '../mmediting/data/enhanced/dcad_ldv_v2/500k/mfqe_v2' \
+-save-dir './log/dcad_ldv_v2/500k/mfqe_v2' \
 -order
 ```
 
 Note: We ignore the PSNR of the first frame of video *002* in the LDVv2 dataset since it is a black frame and the PSNR is `inf`.
+
+For the STDF-Y model:
+
+```bash
+conda activate powervqe && \
+python cal_y_psnr_stdf_y.py \
+-gt-dir '../mmediting/data/mfqe_v2/test_gt' \
+-enh-dir '../mmediting/data/enhanced/stdf_y_ldv_v2/1m/mfqe_v2' \
+-save-dir './log/stdf_y_ldv_v2/1m/mfqe_v2' \
+-order
+```
 
 ## 7. Q&A
 
@@ -454,14 +479,14 @@ To simplify the training of MFQEv2,
 
 Here are some important files to run our codes. You can simply copy these files to the latest MMEditing repo.
 
+- `mmediting/toolbox_test`
+- `mmediting/demo/restoration_video_demo_basicvsrpp.py`
 - `mmediting/configs/restorers/<your-interested-configs>.py`
-- `mmediting/mmedit/models/backbones/sr_backbones/<your-interested-backbones>.py`
-- `mmediting/mmedit/models/restorers/<your-interested-restorers>.py`
+- `mmediting/mmedit/apis/restoration_video_inference.py`
 - `mmediting/mmedit/datasets/pipelines/augmentation.py`
 - `mmediting/mmedit/datasets/<your-interested-datasets>.py`
-- `mmediting/demo/restoration_video_demo.py`
-- `mmediting/mmedit/apis/restoration_video_inference.py`
-- `mmediting/toolbox_test`
+- `mmediting/mmedit/models/backbones/sr_backbones/<your-interested-backbones>.py`
+- `mmediting/mmedit/models/restorers/<your-interested-restorers>.py`
 
 ### 7.3 Support for Image Datasets
 

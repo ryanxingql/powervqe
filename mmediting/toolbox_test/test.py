@@ -65,8 +65,8 @@ for vid_name in vid_name_list:
 
     print(f'> test: {vid_name}')
     cmd_ = (f'CUDA_VISIBLE_DEVICES={args.gpu}'
-            f' python ../demo/restoration_video_demo.py {args.config_path} '
-            f'{args.model_path} {vid_subdir} {save_subdir}'
+            f' python ../demo/restoration_video_demo_basicvsrpp.py '
+            f'{args.config_path} {args.model_path} {vid_subdir} {save_subdir}'
             ' --start-idx 1 --filename-tmpl f{:03d}.png')
     if args.if_rmd:
         cmd_ += ' --if-rmd'

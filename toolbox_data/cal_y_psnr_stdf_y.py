@@ -98,7 +98,9 @@ def main():
             img_enh = cv2.imread(osp.join(enh_vid_dir, img_name))
 
             img_gt = return_y_from_bgr(img_gt).astype(float)
-            img_enh = return_y_from_bgr(img_enh).astype(float)
+            # img_enh = return_y_from_bgr(img_enh).astype(float)
+            # img_gt = img_gt[..., 0]
+            img_enh = img_enh[..., 0]
 
             psnr = cal_psnr(img_enh, img_gt)
             psnr_list.append(psnr)

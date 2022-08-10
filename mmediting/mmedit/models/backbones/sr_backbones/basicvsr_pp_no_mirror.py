@@ -213,8 +213,14 @@ class BasicVSRPlusPlusNoMirror(nn.Module):
                     cond_n2 = flow_warp(feat_n2, flow_n2.permute(0, 2, 3, 1))
 
                 # flow-guided deformable convolution
+                # batchsize 3*mid_channels patchsize//4 patchsize//4
+                # (2 192 64 64)
                 cond = torch.cat([cond_n1, feat_current, cond_n2], dim=1)
+                # batchsize 2*mid_channels patchsize//4 patchsize//4
+                # (2 128 64 64)
                 feat_prop = torch.cat([feat_prop, feat_n2], dim=1)
+                # batchsize mid_channels patchsize//4 patchsize//4
+                # (2 64 64 64)
                 feat_prop = self.deform_align[module_name](feat_prop, cond,
                                                            flow_n1, flow_n2)
 
@@ -342,6 +348,8 @@ class BasicVSRPlusPlusNoMirror(nn.Module):
 
                 feats[module] = []
 
+                # (batchsize, nfrm-1, x_y_offsets, patchsize//4, patchsize//4)
+                # (2 29 2 64 64)
                 if direction == 'backward':
                     flows = flows_backward
                 elif flows_forward is not None:
@@ -415,12 +423,21 @@ class SecondOrderDeformableAlignment(ModulatedDeformConv2d):
     def forward(self, x, extra_feat, flow_1, flow_2):
         extra_feat = torch.cat([extra_feat, flow_1, flow_2], dim=1)
         out = self.conv_offset(extra_feat)
+        # o1/o2/mask
+        # (2, 144, 64, 64)
+        # (batchsize 9*deform_group=9*16 patchsize//4 patchsize//4)
         o1, o2, mask = torch.chunk(out, 3, dim=1)
 
         # offset
         offset = self.max_residue_magnitude * torch.tanh(
             torch.cat((o1, o2), dim=1))
+        # o1/o2 -> offset_1/offset_2
+        # (2 144 64 64)
         offset_1, offset_2 = torch.chunk(offset, 2, dim=1)
+
+        # flow_1: 2 2 64 64
+        # offset_1: 2 144 64 64
+        # x<->y, because flow provides [x y] and DCN offset requires [y x]
         offset_1 = offset_1 + flow_1.flip(1).repeat(1,
                                                     offset_1.size(1) // 2, 1,
                                                     1)
@@ -432,6 +449,9 @@ class SecondOrderDeformableAlignment(ModulatedDeformConv2d):
         # mask
         mask = torch.sigmoid(mask)
 
+        # x: (2 128 64 64)
+        # offset: (2 288 64 64)
+        # mask: (2 144 64 64)
         return modulated_deform_conv2d(x, offset, mask, self.weight, self.bias,
                                        self.stride, self.padding,
                                        self.dilation, self.groups,

@@ -142,7 +142,7 @@ powervqe/
 
 ## 4. Datasets
 
-We provide the built FFmpeg 5.0.1 for converting MKV to PNG. You can download it on [Dropbox](https://www.dropbox.com/s/dr4pxs5fjzri6z1/ffmpeg-release-amd64-static.tar.xz?dl=0) or [Baidu Pan](https://pan.baidu.com/s/1Zw_ozBf6Dd1r2K2Q-4kIaw?pwd=13l0).
+We provide the built FFmpeg 5.0.1 for converting MKV to PNG. You can download it on [Baidu Pan](https://pan.baidu.com/s/1Zw_ozBf6Dd1r2K2Q-4kIaw?pwd=13l0).
 
 ```bash
 cd <your-ffmpeg-dir>
@@ -160,7 +160,7 @@ We use the [LDVv2 dataset](https://arxiv.org/abs/2204.09314) for training, valid
 
 The LDVv2 dataset includes 240 videos for training, 15 videos for validation, and 15 videos for testing. Each raw video is compressed by HM 16.20 with the LDP, QP=37 setting.
 
-You can first download this dataset on [Dropbox](https://www.dropbox.com/sh/3enteycl9439gzq/AABgfXApw4yQaZFAB5gyAmQha?dl=0) or [Baidu Pan](https://pan.baidu.com/s/1eJn-O7gkwykNxU8qJ9emaw?pwd=iuil).
+You can first download this dataset on [Dropbox](https://www.dropbox.com/scl/fo/bfbycjv6y17tkqtc3wt2n/h?rlkey=5k0q21n63s2fi0wyxwx8vl8eb&dl=0) or [Baidu Pan](https://pan.baidu.com/s/1eJn-O7gkwykNxU8qJ9emaw?pwd=iuil).
 
 To convert MKV to PNG, the suggested commands are as follows:
 
